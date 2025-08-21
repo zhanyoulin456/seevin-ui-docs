@@ -16,24 +16,6 @@ app.use(TDesignUI)
 app.mount('#app')
 ```
 
-## 工具库引入
-
-引入工具库中的实用工具：
-
-```ts
-import { HttpClient } from '@seevin/common'
-
-// 创建 HTTP 客户端实例
-const httpClient = new HttpClient({
-  baseURL: 'https://api.example.com',
-  timeout: 30000
-})
-
-// 使用客户端发送请求
-const response = await httpClient.get('/users')
-console.log(response.data)
-```
-
 ## 按需引入
 
 ### 手动导入
@@ -204,6 +186,24 @@ import '@seevin/ui/style/index.css' // 已包含 reset.css
 ```
 
 ## 工具库使用示例
+
+## 工具库引入
+
+引入工具库中的实用工具：
+
+```ts
+import { HttpClient } from '@seevin/common'
+
+// 创建 HTTP 客户端实例
+const httpClient = new HttpClient({
+  baseURL: 'https://api.example.com',
+  timeout: 30000
+})
+
+// 使用客户端发送请求
+const response = await httpClient.get('/users')
+console.log(response.data)
+```
 
 ### HTTP 客户端
 
