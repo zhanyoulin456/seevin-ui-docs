@@ -99,7 +99,7 @@
   - 灵活的响应格式控制
 - **开发工具函数** - `devWarn` 和 `devError`
   - 在开发环境下输出警告和错误信息，支持 Tree-shaking，生产环境自动移除。
-- **通用工具函数** - `isNetworkImage`, `generateShortUUID`, `generateUUID`
+- **通用工具函数** - `isNetworkUrl`, `generateShortUUID`, `generateUUID`
   - 提供判断网络图片、生成 UUID 等常用工具函数。
 
 #### 导入方式

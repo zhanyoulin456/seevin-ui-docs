@@ -32,7 +32,7 @@ const tools = [
     icon: '❌'
   },
   {
-    name: 'isNetworkImage',
+    name: 'isNetworkUrl',
     description: '判断是否为网络图片 URL',
     icon: '🖼️'
   },
@@ -79,13 +79,13 @@ pnpm install @seevin/common
 ```ts
 import * as SeevinCommon from '@seevin/common'
 
-const { HttpClient, devWarn, devError, isNetworkImage, generateShortUUID, generateUUID } = SeevinCommon
+const { HttpClient, devWarn, devError, isNetworkUrl, generateShortUUID, generateUUID } = SeevinCommon
 ```
 
 ### 按需导入（推荐）
 
 ```ts
-import { HttpClient, devWarn, devError, isNetworkImage, generateShortUUID, generateUUID } from '@seevin/common'
+import { HttpClient, devWarn, devError, isNetworkUrl, generateShortUUID, generateUUID } from '@seevin/common'
 
 // 创建 HTTP 客户端实例
 const client = new HttpClient({
@@ -104,13 +104,7 @@ console.log(uuid)
 
 ```ts
 import type { BaseResponse, RequestError, HttpClientOptions, ExtendedAxiosRequestConfig } from '@seevin/common'
-import type {
-  DevWarnFn,
-  DevErrorFn,
-  IsNetworkImageFn,
-  GenerateShortUUIDFn,
-  GenerateUUIDFn
-} from '@seevin/common/shared'
+import type { DevWarnFn, DevErrorFn, isNetworkUrlFn, GenerateShortUUIDFn, GenerateUUIDFn } from '@seevin/common/shared'
 ```
 
 ## 可用工具
@@ -137,7 +131,7 @@ import type {
 | --------------------- | ----------------------------------------- | ------------------ |
 | **devWarn**           | 开发环境下输出警告信息，支持 Tree-shaking | -                  |
 | **devError**          | 开发环境下输出错误信息，支持 Tree-shaking | -                  |
-| **isNetworkImage**    | 判断给定 URL 是否为网络图片               | -                  |
+| **isNetworkUrl**      | 判断给定 URL 是否为网络图片               | -                  |
 | **generateShortUUID** | 生成简短的随机字符串                      | -                  |
 | **generateUUID**      | 生成标准的 UUID 字符串                    | -                  |
 
@@ -200,7 +194,7 @@ async function fetchUserData() {
 ### 通用工具示例
 
 ```ts
-import { devWarn, devError, isNetworkImage, generateShortUUID, generateUUID } from '@seevin/common'
+import { devWarn, devError, isNetworkUrl, generateShortUUID, generateUUID } from '@seevin/common'
 
 // devWarn 和 devError 示例
 if (process.env.NODE_ENV === 'development') {
@@ -208,12 +202,12 @@ if (process.env.NODE_ENV === 'development') {
   devError('AnotherComponent', new Error('这是一个开发环境错误'), '错误上下文')
 }
 
-// isNetworkImage 示例
+// isNetworkUrl 示例
 const imageUrl = 'https://example.com/image.jpg'
-console.log(`'${imageUrl}' 是网络图片吗？`, isNetworkImage(imageUrl))
+console.log(`'${imageUrl}' 是网络图片吗？`, isNetworkUrl(imageUrl))
 
 const localPath = '/path/to/local/image.png'
-console.log(`'${localPath}' 是网络图片吗？`, isNetworkImage(localPath))
+console.log(`'${localPath}' 是网络图片吗？`, isNetworkUrl(localPath))
 
 // UUID 生成示例
 console.log('简短 UUID:', generateShortUUID())
@@ -326,13 +320,7 @@ const users = await client.get<User[]>('/users')
 
 // 导入类型
 import type { BaseResponse, RequestError, HttpClientOptions, ExtendedAxiosRequestConfig } from '@seevin/common'
-import type {
-  DevWarnFn,
-  DevErrorFn,
-  IsNetworkImageFn,
-  GenerateShortUUIDFn,
-  GenerateUUIDFn
-} from '@seevin/common/shared'
+import type { DevWarnFn, DevErrorFn, isNetworkUrlFn, GenerateShortUUIDFn, GenerateUUIDFn } from '@seevin/common/shared'
 ```
 
 ## 构建配置
