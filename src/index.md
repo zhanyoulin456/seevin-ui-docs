@@ -66,7 +66,7 @@ import '@seevin/ui/style/base.css'
 ### 筛选组件
 
 ```vue
-<ProFilter :conditions="conditions" @search="handleFilter" />
+<ProFilter :items="conditions" @search="handleFilter" />
 ```
 
 ### 页面脚手架

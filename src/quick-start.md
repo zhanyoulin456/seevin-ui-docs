@@ -112,7 +112,7 @@ module.exports = {
 
     <!-- 自动导入自定义组件 -->
     <ProSearch v-model="keyword" @search="handleSearch" />
-    <ProFilter :conditions="filterConditions" @search="handleFilter" />
+    <ProFilter :items="filterConditions" @search="handleFilter" />
 
     <!-- 自动导入图标组件 -->
     <AddIcon />
@@ -286,7 +286,7 @@ onMounted(() => {
     <ProSearch v-model="searchKeyword" placeholder="请输入搜索关键字" @search="handleSearch" @clear="handleClear" />
 
     <!-- 筛选组件 -->
-    <ProFilter :conditions="filterConditions" @search="handleFilterSearch" @clear="handleFilterClear" />
+    <ProFilter :items="filterConditions" @search="handleFilterSearch" @clear="handleFilterClear" />
 
     <!-- 表格组件 -->
     <ProTable size="medium" />

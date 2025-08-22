@@ -255,7 +255,7 @@ const clearFilter = () => {
 <DemoBox title="基础用法" description="支持输入框和下拉选择筛选">
 <div>
   <ProFilter
-    :conditions="filterConditions1"
+    :items="filterConditions1"
     @search="handleSearch"
     @clear="handleClear"
   />
@@ -269,7 +269,7 @@ const clearFilter = () => {
 ```vue
 <template>
   <div>
-    <ProFilter :conditions="filterConditions" @search="handleSearch" @clear="handleClear" />
+    <ProFilter :items="filterConditions" @search="handleSearch" @clear="handleClear" />
     <pre>{{ JSON.stringify(searchResult, null, 2) }}</pre>
   </div>
 </template>
@@ -315,12 +315,12 @@ const handleClear = () => {
 使用 `input` 类型创建文本输入框筛选。
 
 <DemoBox title="输入框筛选" description="支持不同宽度和组件属性透传">
-<ProFilter :conditions="inputConditions" @search="handleInputSearch" />
+<ProFilter :items="inputConditions" @search="handleInputSearch" />
 </DemoBox>
 
 ```vue
 <template>
-  <ProFilter :conditions="conditions" @search="handleSearch" />
+  <ProFilter :items="conditions" @search="handleSearch" />
 </template>
 
 <script setup>
@@ -357,12 +357,12 @@ const handleSearch = params => {
 使用 `select` 和 `multipleSelect` 类型创建下拉选择筛选。
 
 <DemoBox title="下拉选择筛选" description="支持单选和多选模式">
-<ProFilter :conditions="selectConditions" @search="handleSelectSearch" />
+<ProFilter :items="selectConditions" @search="handleSelectSearch" />
 </DemoBox>
 
 ```vue
 <template>
-  <ProFilter :conditions="conditions" @search="handleSearch" />
+  <ProFilter :items="conditions" @search="handleSearch" />
 </template>
 
 <script setup>
@@ -405,12 +405,12 @@ const handleSearch = params => {
 使用 `date` 和 `dateRange` 类型创建日期筛选。
 
 <DemoBox title="日期筛选" description="支持单日期和日期范围选择">
-<ProFilter :conditions="dateConditions" @search="handleDateSearch" />
+<ProFilter :items="dateConditions" @search="handleDateSearch" />
 </DemoBox>
 
 ```vue
 <template>
-  <ProFilter :conditions="conditions" @search="handleSearch" />
+  <ProFilter :items="conditions" @search="handleSearch" />
 </template>
 
 <script setup>
@@ -450,12 +450,12 @@ const handleSearch = params => {
 使用 `treeSelect` 类型创建树形选择筛选。
 
 <DemoBox title="树形选择筛选" description="支持组织架构等层级数据筛选">
-<ProFilter :conditions="treeConditions" @search="handleTreeSearch" />
+<ProFilter :items="treeConditions" @search="handleTreeSearch" />
 </DemoBox>
 
 ```vue
 <template>
-  <ProFilter :conditions="conditions" @search="handleSearch" />
+  <ProFilter :items="conditions" @search="handleSearch" />
 </template>
 
 <script setup>
@@ -516,7 +516,7 @@ const handleSearch = params => {
 <div>
   <ProFilter
     ref="filterRef"
-    :conditions="resultConditions"
+    :items="resultConditions"
     @search="handleResultSearch"
     @clear="handleClear"
   />
@@ -532,7 +532,7 @@ const handleSearch = params => {
 ```vue
 <template>
   <div>
-    <ProFilter ref="filterRef" :conditions="conditions" @search="handleSearch" @clear="handleClear" />
+    <ProFilter ref="filterRef" :items="conditions" @search="handleSearch" @clear="handleClear" />
 
     <div class="mt-4">
       <TButton @click="getFilterData">获取筛选数据</TButton>
@@ -617,7 +617,7 @@ const setFilterData = () => {
 <div>
   <ProFilter
     ref="filterRef"
-    :conditions="resultConditions"
+    :items="resultConditions"
     @search="handleResultSearch"
     @clear="handleClear"
   />
@@ -633,7 +633,7 @@ const setFilterData = () => {
 ```vue
 <template>
   <div>
-    <ProFilter ref="filterRef" :conditions="conditions" @search="handleSearch" @clear="handleClear" />
+    <ProFilter ref="filterRef" :items="conditions" @search="handleSearch" @clear="handleClear" />
 
     <div class="mt-4">
       <TButton @click="setPresetFilter1">设置预设1</TButton>
@@ -713,7 +713,7 @@ const clearFilter = () => {
 
 | 名称         | 类型           | 默认值  | 说明             |
 | ------------ | -------------- | ------- | ---------------- |
-| `conditions` | `FilterItem[]` | `[]`    | 筛选条件配置数组 |
+| `items`      | `FilterItem[]` | `[]`    | 筛选条件配置数组 |
 | `showResult` | `boolean`      | `true`  | 是否展示筛选结果 |
 | `loading`    | `boolean`      | `false` | 加载状态         |
 
