@@ -320,7 +320,6 @@ const filterConditions = ref([
     title: '状态',
     colKey: 'status',
     type: 'select',
-    value: '',
     options: [
       { label: '启用', value: '1' },
       { label: '禁用', value: '0' }
@@ -329,8 +328,7 @@ const filterConditions = ref([
   {
     title: '创建时间',
     colKey: 'createTime',
-    type: 'dateRange',
-    value: []
+    type: 'dateRange'
   }
 ])
 

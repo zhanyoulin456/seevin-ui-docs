@@ -12,7 +12,6 @@ const basicFormItems = [
     type: 'input',
     name: 'username',
     label: '用户名',
-    value: '',
     required: true,
     placeholder: '请输入用户名'
   },
@@ -20,7 +19,6 @@ const basicFormItems = [
     type: 'inputNumber',
     name: 'age',
     label: '年龄',
-    value: null,
     componentProps: {
       min: 0,
       max: 120
@@ -30,7 +28,6 @@ const basicFormItems = [
     type: 'select',
     name: 'gender',
     label: '性别',
-    value: '',
     options: [
       { label: '男', value: 'male' },
       { label: '女', value: 'female' }
@@ -40,7 +37,6 @@ const basicFormItems = [
     type: 'textarea',
     name: 'description',
     label: '个人描述',
-    value: '',
     componentProps: {
       rows: 3
     }
@@ -55,7 +51,6 @@ const validationFormItems = [
     type: 'input',
     name: 'email',
     label: '邮箱',
-    value: '',
     required: true,
     rules: [
       { required: true, message: '请输入邮箱' },
@@ -66,7 +61,6 @@ const validationFormItems = [
     type: 'input',
     name: 'password',
     label: '密码',
-    value: '',
     required: true,
     componentProps: {
       type: 'password'
@@ -80,7 +74,6 @@ const validationFormItems = [
     type: 'input',
     name: 'confirmPassword',
     label: '确认密码',
-    value: '',
     required: true,
     componentProps: {
       type: 'password'
@@ -106,28 +99,24 @@ const layoutFormItems = [
     type: 'input',
     name: 'firstName',
     label: '名',
-    value: '',
     col: 12
   },
   {
     type: 'input',
     name: 'lastName',
     label: '姓',
-    value: '',
     col: 12
   },
   {
     type: 'input',
     name: 'phone',
     label: '手机号',
-    value: '',
     col: 24
   },
   {
     type: 'textarea',
     name: 'address',
     label: '地址',
-    value: '',
     col: 24,
     componentProps: {
       rows: 3
@@ -142,21 +131,18 @@ const customFormItems = [
   {
     type: 'input',
     name: 'title',
-    label: '标题',
-    value: ''
+    label: '标题'
   },
   {
     type: 'custom',
     name: 'customField',
     label: '自定义字段',
-    value: '',
     render: () => h('div', { style: 'color: #0052d9; padding: 8px; border: 1px dashed #0052d9; border-radius: 4px;' }, '这是一个自定义渲染的字段')
   },
   {
     type: 'select',
     name: 'category',
     label: '分类',
-    value: '',
     options: [
       { label: '技术', value: 'tech' },
       { label: '产品', value: 'product' }
@@ -352,7 +338,6 @@ const formItems = [
     type: 'input',
     name: 'username',
     label: '用户名',
-    value: '',
     required: true,
     placeholder: '请输入用户名'
   },
@@ -360,7 +345,6 @@ const formItems = [
     type: 'select',
     name: 'gender',
     label: '性别',
-    value: '',
     options: [
       { label: '男', value: 'male' },
       { label: '女', value: 'female' }
@@ -420,7 +404,6 @@ const formItems = [
     type: 'input',
     name: 'email',
     label: '邮箱',
-    value: '',
     required: true,
     rules: [
       { required: true, message: '请输入邮箱' },
@@ -431,7 +414,6 @@ const formItems = [
     type: 'input',
     name: 'password',
     label: '密码',
-    value: '',
     required: true,
     componentProps: {
       type: 'password'
@@ -477,21 +459,18 @@ const formItems = [
     type: 'input',
     name: 'firstName',
     label: '名',
-    value: '',
     col: 12 // 占据一半宽度
   },
   {
     type: 'input',
     name: 'lastName',
     label: '姓',
-    value: '',
     col: 12 // 占据一半宽度
   },
   {
     type: 'input',
     name: 'phone',
     label: '手机号',
-    value: '',
     col: 24 // 占据全宽
   }
 ]
@@ -537,7 +516,6 @@ const formItems = [
     type: 'custom',
     name: 'customField',
     label: '自定义字段',
-    value: '',
     render: () =>
       h(
         'div',
