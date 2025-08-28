@@ -322,7 +322,7 @@ const handleValidate = async (formRef) => {
 <DemoBox title="基础用法" description="展示基础的表单功能">
   <ProForm
     ref="basicFormRef"
-    :form-items="basicFormItems"
+    :items="basicFormItems"
   >
     <template #footer>
       <TButton theme="primary" type="submit">提交</TButton>
@@ -333,7 +333,7 @@ const handleValidate = async (formRef) => {
 
 ```vue
 <template>
-  <ProForm ref="formRef" :form-items="formItems">
+  <ProForm ref="formRef" :items="formItems">
     <template #footer>
       <t-button theme="primary" type="submit">提交</t-button>
       <t-button theme="default" @click="handleReset">重置</t-button>
@@ -389,7 +389,7 @@ const handleReset = () => {
 <DemoBox title="表单验证" description="集成完整的验证功能，支持多种验证规则">
   <ProForm
     ref="validationFormRef"
-    :form-items="validationFormItems"
+    :items="validationFormItems"
   >
     <template #footer>
       <TButton theme="primary" type="submit">提交</TButton>
@@ -452,7 +452,7 @@ const formItems = [
 <DemoBox title="响应式布局" description="使用栅格系统实现响应式布局">
   <ProForm
     ref="layoutFormRef"
-    :form-items="layoutFormItems"
+    :items="layoutFormItems"
     :gutter="[16, 16]"
   >
     <template #footer>
@@ -505,7 +505,7 @@ const formItems = [
 <DemoBox title="自定义渲染" description="使用 render 函数或插槽自定义表单项">
   <ProForm
     ref="customFormRef"
-    :form-items="customFormItems"
+    :items="customFormItems"
   >
     <template #footer>
       <TButton theme="primary" type="submit">提交</TButton>
@@ -558,7 +558,7 @@ const formItems = [
 <DemoBox title="动态表单" description="支持动态添加和删除表单项">
   <ProForm
     ref="dynamicFormRef"
-    :form-items="dynamicFormItems"
+    :items="dynamicFormItems"
   >
     <template #footer>
       <TButton theme="primary" type="submit">提交</TButton>
@@ -646,7 +646,7 @@ const removeContact = index => {
 <DemoBox title="表单联动" description="表单项之间的联动效果">
   <ProForm
     ref="linkageFormRef"
-    :form-items="linkageFormItems"
+    :items="linkageFormItems"
   >
     <template #footer>
       <TButton theme="primary" type="submit">提交</TButton>
@@ -657,7 +657,7 @@ const removeContact = index => {
 
 ```vue
 <template>
-  <ProForm ref="formRef" :form-items="formItems">
+  <ProForm ref="formRef" :items="formItems">
     <template #footer>
       <t-button theme="primary" type="submit">提交</t-button>
     </template>
@@ -737,7 +737,7 @@ const formItems = computed(() => {
 
 | 名称         | 类型                                                      | 默认值  | 说明                  |
 | ------------ | --------------------------------------------------------- | ------- | --------------------- |
-| `formItems`  | `ProFormItemConfig[]`                                     | `[]`    | 表单项配置数组，必需  |
+| `items`      | `ProFormItemConfig[]`                                     | `[]`    | 表单项配置数组，必需  |
 | `gutter`     | `number \| GutterObject \| Array<GutterObject \| number>` | -       | 表单项间距配置        |
 | `rowProps`   | `Omit<RowProps, 'gutter'>`                                | `{}`    | 透传给 Row 组件的属性 |
 | `labelAlign` | `'left' \| 'right' \| 'top'`                              | `'top'` | 标签对齐方式          |
