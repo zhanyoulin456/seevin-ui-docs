@@ -1,5 +1,12 @@
 # @seevin/docs
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @seevin/ui@0.0.7
+
 ## 0.0.5
 
 ### Patch Changes
