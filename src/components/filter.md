@@ -1,7 +1,6 @@
 # ProFilter 筛选组件
 
-一个功能强大的筛选组件，支持多种筛选类型，包括输入框、下拉选择、日期选择、树形选择等，
-并提供筛选结果展示。
+一个功能强大的筛选组件，基于 TDesign Vue Next 构建，支持多种筛选类型，包括输入框、下拉选择、日期选择、树形选择等，并提供筛选结果展示和动画效果。
 
 <script setup>
 import { ref, h } from 'vue'
@@ -244,7 +243,7 @@ const setPresetFilter2 = () => {
 }
 
 const clearFilter = () => {
-  filterRef.value?.setFilterValues({})
+  filterRef.value?.clearFilterValues()
 }
 </script>
 
@@ -702,7 +701,7 @@ const setPresetFilter2 = () => {
 }
 
 const clearFilter = () => {
-  filterRef.value?.setFilterValues({})
+  filterRef.value?.clearFilterValues()
 }
 </script>
 ```
@@ -711,42 +710,54 @@ const clearFilter = () => {
 
 ### Props
 
-| 名称         | 类型           | 默认值  | 说明             |
-| ------------ | -------------- | ------- | ---------------- |
-| `items`      | `FilterItem[]` | `[]`    | 筛选条件配置数组 |
-| `showResult` | `boolean`      | `true`  | 是否展示筛选结果 |
-| `loading`    | `boolean`      | `false` | 加载状态         |
+| 名称           | 类型                  | 默认值  | 说明                     |
+| -------------- | --------------------- | ------- | ------------------------ |
+| `items`        | `FilterItem[]`        | `[]`    | 筛选条件配置数组         |
+| `showResult`   | `boolean`             | `true`  | 是否展示筛选结果         |
+| `loading`      | `boolean`             | `false` | 加载状态                 |
+| `padding`      | `string \| number`    | `16px`  | 整体内边距               |
+| `conditionGap` | `string \| number`    | `8px`   | 筛选条件区域的间距       |
+| `resultGap`    | `string \| number`    | `10px`  | 筛选结果区域的间距       |
+| `labelStyle`   | `Record<string, any>` | `{}`    | 筛选结果标签的自定义样式 |
+| `tagStyle`     | `Record<string, any>` | `{}`    | 筛选结果标签的自定义样式 |
+| `labelClass`   | `string`              | `''`    | 筛选结果标签的自定义类名 |
+| `tagClass`     | `string`              | `''`    | 筛选结果标签的自定义类名 |
 
 ### Events
 
 | 名称     | 类型                                    | 说明                             |
 | -------- | --------------------------------------- | -------------------------------- |
-| `search` | `(params: Record<string, any>) => void` | 点击查询按钮时触发，返回筛选参数 |
+| `search` | `(filter: Record<string, any>) => void` | 点击查询按钮时触发，返回筛选参数 |
 | `clear`  | `() => void`                            | 点击清空按钮时触发               |
 
 ### Methods
 
-| 名称              | 类型                                    | 说明             |
-| ----------------- | --------------------------------------- | ---------------- |
-| `getFilterResult` | `() => Record<string, any>`             | 获取当前筛选结果 |
-| `setFilterValues` | `(values: Record<string, any>) => void` | 设置筛选条件的值 |
+| 名称                | 类型                                    | 说明                             |
+| ------------------- | --------------------------------------- | -------------------------------- |
+| `getFilterResult`   | `() => Record<string, any>`             | 获取当前筛选结果                 |
+| `setFilterValues`   | `(values: Record<string, any>) => void` | 设置筛选条件的值                 |
+| `clearFilterValues` | `() => void`                            | 清空筛选条件的值                 |
+| `filterResult`      | `Ref<FilterItem[]>`                     | 有结果的筛选项数据（响应式引用） |
 
 ### FilterItem 配置
 
-| 名称             | 类型                                       | 默认值  | 说明                              |
-| ---------------- | ------------------------------------------ | ------- | --------------------------------- |
-| `title`          | `string`                                   | -       | 筛选项标题，用于显示和placeholder |
-| `colKey`         | `string`                                   | -       | 字段键名，用于筛选结果的key       |
-| `type`           | `FilterComponentType`                      | -       | 筛选组件类型                      |
-| `value`          | `string \| number \| (string \| number)[]` | -       | 筛选值，支持双向绑定              |
-| `width`          | `string \| number`                         | -       | 组件宽度，数字会自动添加px单位    |
-| `options`        | `SelectOption[]`                           | -       | 下拉选择的选项数据                |
-| `treeOptions`    | `any[]`                                    | -       | 树形选择的数据                    |
-| `closable`       | `boolean`                                  | `true`  | 筛选结果标签是否可关闭删除        |
-| `resultTitle`    | `string`                                   | -       | 筛选结果展示标题，优先级高于title |
-| `disabled`       | `boolean`                                  | `false` | 是否禁用                          |
-| `componentProps` | `any`                                      | -       | 透传给筛选组件的属性              |
-| `render`         | `(item: FilterItem) => VNode`              | -       | 自定义渲染函数                    |
+| 名称             | 类型                                       | 默认值 | 说明                              |
+| ---------------- | ------------------------------------------ | ------ | --------------------------------- |
+| `type`           | `FilterComponentType`                      | -      | 筛选组件类型（必传）              |
+| `value`          | `string \| number \| (string \| number)[]` | -      | 筛选值，支持双向绑定（必传）      |
+| `title`          | `string`                                   | -      | 筛选项标题，用于显示和placeholder |
+| `colKey`         | `string`                                   | -      | 字段键名，用于筛选结果的key       |
+| `order`          | `number`                                   | -      | 排序，数字越小越靠前              |
+| `width`          | `string \| number`                         | -      | 组件宽度，数字会自动添加px单位    |
+| `style`          | `CSSProperties`                            | -      | 筛选项组件自定义样式              |
+| `class`          | `string`                                   | -      | 筛选项组件自定义类名              |
+| `options`        | `ProFilterSelectOption[]`                  | -      | 下拉选择的选项数据                |
+| `treeOptions`    | `TreeOptionData[]`                         | -      | 树形选择的数据                    |
+| `closable`       | `boolean`                                  | `true` | 筛选结果标签是否可关闭删除        |
+| `resultTitle`    | `string`                                   | -      | 筛选结果展示标题，优先级高于title |
+| `componentProps` | `any`                                      | -      | 透传给筛选组件的属性              |
+| `render`         | `(item: FilterItem) => VNode`              | -      | 自定义渲染函数                    |
+| `visible`        | `boolean \| function`                      | -      | 控制当前筛选项是否显示            |
 
 ### FilterComponentType
 
@@ -760,7 +771,14 @@ const clearFilter = () => {
 - `'treeSelect'` - 树形选择器
 - `'inputNumber'` - 数字输入框
 
-### SelectOption
+### 插槽（Slots）
+
+| 名称      | 参数                             | 说明                   |
+| --------- | -------------------------------- | ---------------------- |
+| `result`  | `{ filterResult: FilterItem[] }` | 自定义筛选结果区域     |
+| `actions` | -                                | 自定义筛选项的操作区域 |
+
+### ProFilterSelectOption
 
 下拉选项配置：
 
@@ -771,14 +789,31 @@ const clearFilter = () => {
 
 ## 样式类名
 
-| 类名                                       | 说明           |
-| ------------------------------------------ | -------------- |
-| `.pro-filter`                              | 筛选组件根容器 |
-| `.pro-filter__content`                     | 内容区域       |
-| `.pro-filter__content__condition`          | 筛选条件区域   |
-| `.pro-filter__content__result`             | 筛选结果区域   |
-| `.pro-filter__content__result__list`       | 结果列表容器   |
-| `.pro-filter__content__result__list__item` | 结果项容器     |
-| `.pro-filter__buttons`                     | 按钮区域       |
-| `.pro-filter__buttons__search`             | 查询按钮       |
-| `.pro-filter__buttons__clear`              | 清空按钮       |
+| 类名                                                       | 说明                 |
+| ---------------------------------------------------------- | -------------------- |
+| `.pro-filter`                                              | 筛选组件根容器       |
+| `.pro-filter__content`                                     | 内容区域             |
+| `.pro-filter__content__condition`                          | 筛选条件区域         |
+| `.pro-filter__content__result`                             | 筛选结果区域         |
+| `.pro-filter__content__result__list`                       | 结果列表容器         |
+| `.pro-filter__content__result__list__item`                 | 结果项容器           |
+| `.pro-filter__content__result__list__item .label`          | 结果项标签           |
+| `.pro-filter__content__result__list__item .t-tag--default` | 结果标签样式         |
+| `.pro-filter__content__result__list__item .multiple-tag`   | 多选标签             |
+| `.pro-filter__buttons`                                     | 按钮区域             |
+| `.pro-filter__buttons__search`                             | 查询按钮             |
+| `.pro-filter__buttons__clear`                              | 清空按钮             |
+| `.filter-result-enter-active`                              | 结果区域进入动画     |
+| `.filter-result-leave-active`                              | 结果区域离开动画     |
+| `.filter-result-enter-from`                                | 结果区域进入起始状态 |
+| `.filter-result-leave-to`                                  | 结果区域离开结束状态 |
+
+## 特性说明
+
+- **响应式设计**：支持全局配置（ProConfigProvider）和局部配置
+- **动画效果**：基于 max-height 的流畅展开收起动画
+- **类型安全**：完整的 TypeScript 类型定义
+- **组件透传**：支持透传属性到底层 TDesign 组件
+- **自定义渲染**：支持自定义筛选组件渲染函数
+- **可见性控制**：支持动态控制筛选项的显示和隐藏
+- **样式定制**：支持自定义样式和类名
