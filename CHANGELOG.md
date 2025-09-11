@@ -1,5 +1,11 @@
 # @seevin/docs
 
+## 0.0.20
+
+### Patch Changes
+
+- @seevin/ui@0.1.3
+
 ## 0.0.19
 
 ### Patch Changes
