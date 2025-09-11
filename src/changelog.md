@@ -30,7 +30,7 @@
   - 自动展示筛选结果标签
   - 支持筛选结果的单独删除
 
-- **CTable** - 表格组件
+- **ProTable** - 表格组件
   - 基于 TDesign 构建
   - 基础表格展示功能
   - 支持分页功能
@@ -38,7 +38,7 @@
   - 支持筛选项配置、排序、自定义渲染
   - 自动管理表格状态（加载、数据等）
 
-- **CScaffold** - 页面脚手架组件
+- **ProScaffold** - 页面脚手架组件
   - 标准化页面布局结构
   - 支持头部、内容、底部区域插槽
   - 支持返回按钮配置
@@ -47,20 +47,20 @@
   - 支持自定义内容区域宽度
   - 响应式设计，适配不同屏幕尺寸
 
-- **CUpload** - 文件上传组件
+- **ProUpload** - 文件上传组件
   - 基于 TDesign Upload 封装，内置阿里云 OSS 上传支持。
   - 通过 `signature` 属性提供签名函数，即可轻松实现文件上传。
   - 支持 `rename` 属性，用于在上传前重命名文件。
-  - 配置优先级为：`props` > `CConfigProvider` > `默认配置`，灵活管理组件行为。
+  - 配置优先级为：`props` > `ProConfigProvider` > `默认配置`，灵活管理组件行为。
   - 内置基于 `accept` prop 的 MIME 类型校验。
   - 内置上传失败的 `NotifyPlugin` 提示。
   - 支持 `requestMethod` 属性以完全覆盖默认上传行为。
   - 继承 TDesign Upload 的所有 Props、Events 和 Slots，易于扩展。
   - 提供完整的 TypeScript 类型支持。
 
-- **CConfigProvider** - 全局配置组件
-  - 支持 CTable 全局配置
-  - 支持 CUpload 全局配置
+- **ProConfigProvider** - 全局配置组件
+  - 支持 ProTable 全局配置
+  - 支持 ProUpload 全局配置
   - 支持 TDesign 原生配置透传
   - 支持嵌套配置（内层覆盖外层）
   - 完善的类型定义和提示
@@ -117,7 +117,7 @@
 
 - **工具库导入**
   - 支持独立安装和使用 @seevin/common
-  - 不依赖 Vue，可用于任何 JavaScript/TypeScript 项目
+  - 可用于任何 JavaScript/TypeScript 项目
   - 提供完整的类型定义文件
 
 ### 📦 构建配置
@@ -142,7 +142,6 @@
 ### 🔧 开发工具
 
 - 支持 unplugin-vue-components 自动导入
-- 支持 unplugin-auto-import 自动导入
 - 提供完整的开发和构建脚本
 - 支持 watch 模式开发
 - 工具库支持独立构建和测试
@@ -155,7 +154,7 @@
 
 #### 新组件
 
-- [ ] CForm - 表单组件
+- [ ] ProForm - 表单组件
 
 ---
 
