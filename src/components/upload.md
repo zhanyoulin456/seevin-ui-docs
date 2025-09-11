@@ -1,6 +1,34 @@
-# Upload 文件上传
+# ProUpload 文件上传组件
 
-基于 TDesign Upload 组件封装的高级文件上传组件，提供拖拽上传、类型限制、尺寸配置、文件重命名、图片裁剪等功能，并集成阿里云 OSS 上传能力。
+一个功能强大的文件上传组件，基于 TDesign Upload 组件深度封装，提供了阿里云 OSS 直传、文件类型自动验证、拖拽上传、图片预览、进度监控等企业级特性。组件支持全局配置和局部配置的灵活组合，内置了完善的错误处理和用户友好的提示机制，适用于各种文件上传场景。
+
+## 使用场景
+
+- **单文件上传**：头像上传、身份证照片上传、合同文件上传等
+- **批量文件上传**：产品图片批量上传、数据导入文件上传等
+- **拖拽上传**：大文件上传、多文件同时上传等高效场景
+- **图片墙**：商品图片管理、照片相册等需要缩略图展示的场景
+- **定制上传**：特殊格式文件处理、上传前加密、大文件分片上传等
+- **企业级应用**：OA 系统文件附件、CRM 客户资料上传等
+
+## 核心特性
+
+- **OSS 直传**：内置阿里云 OSS 直传支持，减少服务器压力
+- **类型验证**：自动根据 MIME 类型验证文件格式，提供友好提示
+- **进度监控**：实时显示上传进度，支持暂停和取消操作
+- **全局配置**：支持通过 ProConfigProvider 进行全局配置
+- **错误处理**：完善的错误处理机制和用户友好的错误提示
+- **自定义扩展**：支持自定义上传逻辑，灵活适配各种业务需求
+
+## 快速开始
+
+在使用 ProUpload 组件之前，您需要：
+
+1. **准备 OSS 配置**：获取阿里云 OSS 的 AccessKey、Bucket 等信息
+2. **实现签名服务**：在后端实现一个获取 OSS 上传签名的接口
+3. **配置签名函数**：在前端实现 `signature` 函数，调用后端接口获取签名
+
+⚠️ **提示**：如果您不使用 OSS 直传，可以通过 `request-method` 属性自定义上传逻辑。
 
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -332,7 +360,206 @@ const customUploadFn: ProUploadProps['requestMethod'] = files => {
 
 当两种配置同时存在时，**`props` 的优先级总是高于 `ProConfigProvider` 中的全局配置**。这意味着你可以先进行全局配置，然后在个别需要特殊处理的 `ProUpload` 实例上通过 `props` 进行覆盖。
 
-这种设计提供了高度的灵活性，让你既能保持整体一致性，又能轻松处理特殊情况。
+## 高级用法
+
+### 文件类型限制和大小验证
+
+组件内置了智能的文件类型验证，支持 MIME 类型匹配和友好的错误提示。
+
+<DemoBox title="文件类型限制" description="只允许上传 PDF 和 Word 文档">
+  <ProUpload
+    v-model="fileList"
+    :signature="getSignature"
+    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    :before-upload="beforeUploadCheck"
+    @success="handleSuccess"
+    @fail="handleFail"
+  >
+    <TButton theme="primary">
+      <template #icon>
+        <UploadIcon />
+      </template>
+      上传文档
+    </TButton>
+  </ProUpload>
+</DemoBox>
+
+```vue
+<template>
+  <ProUpload
+    v-model="fileList"
+    :signature="getSignature"
+    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    :before-upload="beforeUploadCheck"
+    @success="handleSuccess"
+    @fail="handleFail"
+  >
+    <TButton theme="primary">
+      <UploadIcon />
+      上传文档
+    </TButton>
+  </ProUpload>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { MessagePlugin, type UploadFile, type ProUploadProps } from '@seevin/ui'
+
+const fileList = ref<UploadFile[]>([])
+
+const beforeUploadCheck: ProUploadProps['beforeUpload'] = file => {
+  const maxSize = 10 * 1024 * 1024 // 10MB
+  if (file.size! > maxSize) {
+    MessagePlugin.warning('文件大小不能超过 10MB')
+    return false
+  }
+  return true
+}
+
+const getSignature: ProUploadProps['signature'] = async (fileName, file) => {
+  // 获取签名逻辑...
+}
+</script>
+```
+
+### 图片压缩和预处理
+
+结合 `before-upload` 属性对图片进行压缩处理。
+
+```vue
+<template>
+  <ProUpload
+    v-model="fileList"
+    :signature="getSignature"
+    accept="image/*"
+    :before-upload="compressImage"
+    theme="image"
+    multiple
+  />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { MessagePlugin, type ProUploadProps } from '@seevin/ui'
+
+const fileList = ref([])
+
+const compressImage: ProUploadProps['beforeUpload'] = file => {
+  return new Promise(resolve => {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    const img = new Image()
+
+    img.onload = () => {
+      // 计算压缩后的尺寸
+      const maxWidth = 1920
+      const maxHeight = 1080
+      let { width, height } = img
+
+      if (width > maxWidth || height > maxHeight) {
+        const ratio = Math.min(maxWidth / width, maxHeight / height)
+        width *= ratio
+        height *= ratio
+      }
+
+      canvas.width = width
+      canvas.height = height
+
+      // 绘制压缩后的图片
+      ctx?.drawImage(img, 0, 0, width, height)
+
+      canvas.toBlob(
+        blob => {
+          if (blob) {
+            // 替换原文件
+            const compressedFile = new File([blob], file.name, {
+              type: file.type,
+              lastModified: Date.now()
+            })
+
+            // 更新文件对象
+            Object.assign(file, {
+              raw: compressedFile,
+              size: compressedFile.size
+            })
+
+            MessagePlugin.success(`图片已压缩：${(file.size! / 1024 / 1024).toFixed(2)}MB`)
+          }
+          resolve(true)
+        },
+        file.type,
+        0.8
+      )
+    }
+
+    img.src = URL.createObjectURL(file.raw!)
+  })
+}
+</script>
+```
+
+### 批量上传进度监控
+
+对于大量文件上传，可以监控整体进度。
+
+```vue
+<template>
+  <div>
+    <ProUpload
+      v-model="fileList"
+      :signature="getSignature"
+      multiple
+      :max="10"
+      @progress="handleProgress"
+      @success="handleBatchSuccess"
+    >
+      <div class="upload-area">
+        <p>批量上传文件（最多10个）</p>
+        <p class="text-sm text-gray-500">支持拖拽多个文件</p>
+      </div>
+    </ProUpload>
+
+    <div v-if="totalProgress > 0" class="mt-4">
+      <div class="flex justify-between text-sm text-gray-600">
+        <span>整体进度</span>
+        <span>{{ totalProgress.toFixed(1) }}%</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded h-2 mt-1">
+        <div class="bg-blue-500 h-2 rounded transition-all duration-300" :style="{ width: `${totalProgress}%` }"></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { type UploadFile, type ProUploadProps } from '@seevin/ui'
+
+const fileList = ref<UploadFile[]>([])
+const progressMap = ref<Record<string, number>>({})
+
+// 计算整体进度
+const totalProgress = computed(() => {
+  const progresses = Object.values(progressMap.value)
+  if (progresses.length === 0) return 0
+  return progresses.reduce((sum, progress) => sum + progress, 0) / progresses.length
+})
+
+const handleProgress: ProUploadProps['onProgress'] = ({ file, percent }) => {
+  progressMap.value[file.id || file.name] = percent
+}
+
+const handleBatchSuccess: ProUploadProps['onSuccess'] = ({ file }) => {
+  // 上传成功后移除进度记录
+  delete progressMap.value[file.id || file.name]
+
+  // 检查是否所有文件都上传完成
+  if (Object.keys(progressMap.value).length === 0) {
+    MessagePlugin.success('所有文件上传完成！')
+  }
+}
+</script>
+```
 
 <DemoBox title="配置优先级示例" description="第一个上传组件使用全局配置的 rename，第二个通过 prop 覆盖它。">
   <ProConfigProvider :config="{ ProUpload: { rename: file => `global_${file.name}` } }">
@@ -396,32 +623,68 @@ const getSignature: ProUploadProps['signature'] = async (fileName, file) => {
 
 | 名称        | 类型                                                                  | 默认值                             | 说明                                                                               |
 | ----------- | --------------------------------------------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------- |
-| `signature` | `(fileName: string, file: UploadFile) => Promise<ProUploadSignature>` | -                                  | **必需**。获取 OSS 上传签名信息的函数。函数优先级：`props` > `ProConfigProvider`。 |
+| `signature` | `(fileName: string, file: UploadFile) => Promise<ProUploadSignature>` | `-`                                | **必需**。获取 OSS 上传签名信息的函数。函数优先级：`props` > `ProConfigProvider`。 |
 | `rename`    | `(file: UploadFile) => string`                                        | `() => generateUUID() + file.name` | 文件重命名函数，返回新的文件名。                                                   |
 
-同时继承 `TDesign Upload` 的所有 `Props`，常用属性包括 `accept`, `max`, `multiple`, `disabled`, `theme`, `before-upload` 等。
+同时继承 `TDesign Upload` 的所有 `Props`，常用属性包括：
 
-[查看 TDesign Upload Props](https://tdesign.tencent.com/vue-next/components/upload?tab=api)
+| 名称            | 类型                                                      | 默认值   | 说明                                                                       |
+| --------------- | --------------------------------------------------------- | -------- | -------------------------------------------------------------------------- |
+| `accept`        | `string`                                                  | `-`      | 允许上传的文件类型，使用 MIME 类型，如 `image/*` 或 `image/jpeg,image/png` |
+| `multiple`      | `boolean`                                                 | `false`  | 是否支持多文件上传                                                         |
+| `max`           | `number`                                                  | `-`      | 最大上传文件数量                                                           |
+| `maxSize`       | `number`                                                  | `-`      | 单个文件的最大尺寸（字节）                                                 |
+| `disabled`      | `boolean`                                                 | `false`  | 是否禁用上传                                                               |
+| `draggable`     | `boolean`                                                 | `false`  | 是否支持拖拽上传                                                           |
+| `theme`         | `'file' \| 'image' \| 'image-flow' \| 'custom'`           | `'file'` | 上传组件风格                                                               |
+| `beforeUpload`  | `(file: UploadFile) => boolean \| Promise<boolean>`       | `-`      | 上传文件之前的验证函数                                                     |
+| `requestMethod` | `(files: UploadFile[]) => Promise<RequestMethodResponse>` | `-`      | 自定义上传方法，覆盖默认的 OSS 上传                                        |
+
+🔗 [查看 TDesign Upload 完整 Props](https://tdesign.tencent.com/vue-next/components/upload?tab=api)
 
 ### Events
 
-继承 `TDesign Upload` 的所有 `Events`，常用事件包括 `success`, `fail`, `progress`, `remove`。
+继承 `TDesign Upload` 的所有 `Events`，常用事件包括：
 
-[查看 TDesign Upload Events](https://tdesign.tencent.com/vue-next/components/upload?tab=api)
+| 名称           | 参数                                                           | 说明               |
+| -------------- | -------------------------------------------------------------- | ------------------ |
+| `success`      | `{ file: UploadFile, fileList: UploadFile[], response?: any }` | 上传成功时触发     |
+| `fail`         | `{ file: UploadFile, e: Error, response?: any }`               | 上传失败时触发     |
+| `progress`     | `{ file: UploadFile, percent: number }`                        | 上传进度变化时触发 |
+| `remove`       | `{ file: UploadFile, fileList: UploadFile[] }`                 | 移除文件时触发     |
+| `preview`      | `{ file: UploadFile }`                                         | 点击文件预览时触发 |
+| `selectChange` | `{ files: UploadFile[] }`                                      | 选择文件变化时触发 |
+
+🔗 [查看 TDesign Upload 完整 Events](https://tdesign.tencent.com/vue-next/components/upload?tab=api)
 
 ### Slots
 
-继承 `TDesign Upload` 的所有 `Slots`。
+继承 `TDesign Upload` 的所有 `Slots`：
 
-[查看 TDesign Upload Slots](https://tdesign.tencent.com/vue-next/components/upload?tab=api)
+| 名称                 | 参数                      | 说明                 |
+| -------------------- | ------------------------- | -------------------- |
+| `default`            | `-`                       | 默认上传按钮区域     |
+| `trigger`            | `-`                       | 自定义触发上传的元素 |
+| `tips`               | `-`                       | 上传提示文案         |
+| `dragContent`        | `-`                       | 拖拽区域的内容       |
+| `fileListDisplay`    | `{ files: UploadFile[] }` | 自定义文件列表展示   |
+| `uploadButton`       | `-`                       | 自定义上传按钮       |
+| `cancelUploadButton` | `-`                       | 自定义取消上传按钮   |
+
+🔗 [查看 TDesign Upload 完整 Slots](https://tdesign.tencent.com/vue-next/components/upload?tab=api)
 
 ### Methods
 
-| 名称       | 说明                                               |
-| ---------- | -------------------------------------------------- |
-| `instance` | 获取 `TDesign Upload` 组件实例，可调用其所有方法。 |
+组件暴露的方法：
 
-[查看 TDesign Upload Methods](https://tdesign.tencent.com/vue-next/components/upload?tab=api)
+| 名称                | 参数                                    | 说明                                             |
+| ------------------- | --------------------------------------- | ------------------------------------------------ |
+| `triggerUpload`     | `-`                                     | 手动触发上传                                     |
+| `uploadFilePercent` | `{ file: UploadFile, percent: number }` | 更新文件上传进度                                 |
+| `uploadFiles`       | `files: UploadFile[]`                   | 批量上传文件                                     |
+| `instance`          | `-`                                     | 获取 `TDesign Upload` 组件实例，可调用其所有方法 |
+
+🔗 [查看 TDesign Upload 完整 Methods](https://tdesign.tencent.com/vue-next/components/upload?tab=api)
 
 ## 类型定义
 
@@ -454,3 +717,333 @@ export interface ProUploadExpose extends UploadInstanceFunctions {
   instance: Ref<UploadInstanceFunctions | undefined>
 }
 ```
+
+## 最佳实践
+
+### 1. 安全性配置
+
+```javascript
+// 后端签名接口示例
+const getOSSSignature = async (fileName, file) => {
+  try {
+    const response = await fetch('/api/oss/signature', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAuthToken()}`
+      },
+      body: JSON.stringify({
+        fileName,
+        fileSize: file.size,
+        fileType: file.type
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error('获取签名失败')
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('签名获取失败:', error)
+    throw error
+  }
+}
+```
+
+### 2. 文件类型限制最佳实践
+
+```javascript
+// 推荐的文件类型配置（MIME 类型）
+const acceptConfigs = {
+  image: 'image/*', // 所有图片类型
+  imageSpecific: 'image/jpeg,image/png,image/gif,image/webp', // 特定图片类型
+  document: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document', // PDF和Word
+  video: 'video/*', // 所有视频类型
+  audio: 'audio/*', // 所有音频类型
+  text: 'text/plain,text/csv' // 文本文件
+}
+
+// 使用示例
+<ProUpload accept={acceptConfigs.image} />
+<ProUpload accept={acceptConfigs.document} />
+```
+
+**注意**：组件内部使用 `mime-match` 库进行 MIME 类型匹配，确保了准确的文件类型验证。
+
+### 3. 全局配置示例
+
+```vue
+<template>
+  <ProConfigProvider :config="uploadConfig">
+    <div id="app">
+      <router-view />
+    </div>
+  </ProConfigProvider>
+</template>
+
+<script setup>
+import { reactive } from 'vue'
+import { MessagePlugin } from 'tdesign-vue-next'
+
+const uploadConfig = reactive({
+  proUpload: {
+    // 全局签名函数
+    signature: async (fileName, file) => {
+      return await getOSSSignature(fileName, file)
+    },
+
+    // 全局文件重命名
+    rename: file => {
+      const timestamp = Date.now()
+      const randomStr = Math.random().toString(36).substring(2, 8)
+      const ext = file.name.split('.').pop()
+      return `${timestamp}_${randomStr}.${ext}`
+    },
+
+    // 全局上传前验证
+    beforeUpload: file => {
+      // 文件大小限制（100MB）
+      const maxSize = 100 * 1024 * 1024
+      if (file.size > maxSize) {
+        MessagePlugin.error('文件大小不能超过 100MB')
+        return false
+      }
+      return true
+    },
+
+    // 全局错误处理
+    onFail: ({ file, error }) => {
+      console.error(`文件 ${file.name} 上传失败:`, error)
+      MessagePlugin.error(`文件 ${file.name} 上传失败，请重试`)
+    }
+  }
+})
+</script>
+```
+
+### 4. 性能优化
+
+```javascript
+// 大文件上传优化
+const optimizedUploadConfig = {
+  // 分片上传阀值（50MB）
+  chunkSize: 50 * 1024 * 1024,
+
+  // 并发上传数量限制
+  maxConcurrency: 3,
+
+  // 重试配置
+  retryTimes: 3,
+  retryDelay: 1000
+}
+
+// 图片压缩优化
+const compressImageBeforeUpload = (file, quality = 0.8, maxWidth = 1920, maxHeight = 1080) => {
+  return new Promise(resolve => {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    const img = new Image()
+
+    img.onload = () => {
+      let { width, height } = img
+
+      // 计算压缩后尺寸
+      if (width > maxWidth || height > maxHeight) {
+        const ratio = Math.min(maxWidth / width, maxHeight / height)
+        width *= ratio
+        height *= ratio
+      }
+
+      canvas.width = width
+      canvas.height = height
+      ctx.drawImage(img, 0, 0, width, height)
+
+      canvas.toBlob(
+        blob => {
+          const compressedFile = new File([blob], file.name, {
+            type: file.type,
+            lastModified: Date.now()
+          })
+          resolve(compressedFile)
+        },
+        file.type,
+        quality
+      )
+    }
+
+    img.src = URL.createObjectURL(file.raw || file)
+  })
+}
+```
+
+## 常见问题
+
+### Q: 为什么上传后文件 URL 无法访问？
+
+A: 请检查以下几点：
+
+1. **OSS Bucket 权限配置**：确保 Bucket 允许公共读取
+2. **CORS 配置**：配置正确的跨域访问策略
+3. **签名有效性**：检查签名是否过期
+4. **文件路径**：确认文件路径和名称正确
+
+### Q: 上传大文件时经常失败怎么办？
+
+A: 建议的解决方案：
+
+1. **分片上传**：将大文件分成小块上传
+2. **断点续传**：实现上传失败后的续传功能
+3. **重试机制**：在失败时自动重试
+4. **网络检测**：在网络状态不佳时提醒用户
+
+### Q: 如何实现图片裁剪功能？
+
+A: 可以结合第三方裁剪库：
+
+```vue
+<template>
+  <div>
+    <!-- 裁剪组件 -->
+    <VueCropper v-if="showCropper" :src="cropImage" @confirm="handleCropConfirm" />
+
+    <!-- 上传组件 -->
+    <ProUpload :before-upload="handleBeforeUpload" :signature="getSignature" theme="image" />
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import VueCropper from 'vue-cropper'
+
+const showCropper = ref(false)
+const cropImage = ref('')
+const currentFile = ref(null)
+
+const handleBeforeUpload = file => {
+  if (file.type.startsWith('image/')) {
+    cropImage.value = URL.createObjectURL(file.raw)
+    currentFile.value = file
+    showCropper.value = true
+    return false // 阻止自动上传
+  }
+  return true
+}
+
+const handleCropConfirm = croppedBlob => {
+  const croppedFile = new File([croppedBlob], currentFile.value.name, {
+    type: currentFile.value.type
+  })
+
+  // 更新文件对象
+  Object.assign(currentFile.value, {
+    raw: croppedFile,
+    size: croppedFile.size
+  })
+
+  showCropper.value = false
+
+  // 手动触发上传
+  uploadRef.value.triggerUpload()
+}
+</script>
+```
+
+### Q: 如何自定义上传到其他云存储服务？
+
+A: 使用 `request-method` 属性覆盖默认的 OSS 上传：
+
+```javascript
+// 七牛云上传示例
+const qiniuUpload = async files => {
+  const file = files[0]
+  const formData = new FormData()
+
+  // 获取七牛云上传 token
+  const { token, key } = await getQiniuToken()
+
+  formData.append('file', file.raw)
+  formData.append('token', token)
+  formData.append('key', key)
+
+  try {
+    const response = await fetch('https://upload.qiniup.com', {
+      method: 'POST',
+      body: formData
+    })
+
+    const result = await response.json()
+
+    return {
+      status: 'success',
+      response: {
+        url: `https://your-domain.com/${result.key}`,
+        name: file.name
+      }
+    }
+  } catch (error) {
+    return {
+      status: 'fail',
+      error: error.message
+    }
+  }
+}
+```
+
+### Q: 如何实现文件上传进度的暂停和继续？
+
+A: 可以使用 XMLHttpRequest 或 fetch API 的 AbortController：
+
+```javascript
+const uploadWithPauseResume = {
+  controllers: new Map(),
+
+  async upload(file) {
+    const controller = new AbortController()
+    this.controllers.set(file.id, controller)
+
+    try {
+      const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal
+      })
+
+      return await response.json()
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.log('上传已暂停')
+      }
+      throw error
+    }
+  },
+
+  pause(fileId) {
+    const controller = this.controllers.get(fileId)
+    if (controller) {
+      controller.abort()
+      this.controllers.delete(fileId)
+    }
+  },
+
+  resume(file) {
+    // 重新开始上传
+    this.upload(file)
+  }
+}
+```
+
+## 使用注意事项
+
+1. **安全性**：签名函数必须在后端实现，不要在前端硬编码 AccessKey
+2. **文件大小**：建议在 `beforeUpload` 中限制文件大小，避免上传过大文件
+3. **网络状态**：在网络不稳定的环境下建议实现重试机制
+4. **内存优化**：对于大量文件上传，注意及时清理不需要的文件引用
+5. **兼容性**：在低版本浏览器中可能需要 polyfill 支持
+6. **用户体验**：提供清晰的上传状态反馈和错误提示
+
+## 相关组件
+
+- [`ProConfigProvider`](/components/config-provider) - 全局配置组件，用于配置上传组件的全局参数
+- [`ProForm`](/components/form) - 表单组件，常与上传组件结合使用
+- [`ProTable`](/components/table) - 表格组件，可在表格中显示上传的文件

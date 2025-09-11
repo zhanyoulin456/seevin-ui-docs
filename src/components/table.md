@@ -26,7 +26,7 @@ const filterColumns = [
     colKey: 'name', 
     title: '姓名', 
     width: 120,
-    cFilter: {
+    filterConfig: {
       type: 'input',
       title: '姓名'
     }
@@ -191,7 +191,7 @@ const data = ref([
 
 ## 带筛选功能
 
-在列配置中添加 `cFilter` 属性可以开启筛选功能。
+在列配置中添加 `filterConfig` 属性可以开启筛选功能。
 
 <DemoBox title="带筛选功能" description="集成筛选器，支持多种筛选类型">
 <ProTable
@@ -215,7 +215,7 @@ const columns = [
     colKey: 'name',
     title: '姓名',
     width: 120,
-    cFilter: {
+    filterConfig: {
       type: 'input',
       title: '姓名'
     }
@@ -224,7 +224,7 @@ const columns = [
     colKey: 'department',
     title: '部门',
     width: 120,
-    cFilter: {
+    filterConfig: {
       type: 'select',
       title: '部门',
       options: [
@@ -239,7 +239,7 @@ const columns = [
     colKey: 'status',
     title: '状态',
     width: 100,
-    cFilter: {
+    filterConfig: {
       type: 'select',
       title: '状态',
       options: [
@@ -465,7 +465,7 @@ const columns = [
     colKey: 'name',
     title: '姓名',
     width: 120,
-    cFilter: {
+    filterConfig: {
       type: 'input',
       title: '姓名'
     }
@@ -645,27 +645,50 @@ const data = ref([
 
 ### Props
 
-| 名称              | 类型                                                        | 默认值           | 说明                             |
-| ----------------- | ----------------------------------------------------------- | ---------------- | -------------------------------- |
-| `rowKey`          | `string`                                                    | -                | 唯一标识一行数据的字段名，必需   |
-| `columns`         | `ProTableColumn[]`                                          | -                | 列配置数组，必需                 |
-| `data`            | `T[]`                                                       | `[]`             | 表格数据，静态数据模式下使用     |
-| `tableProps`      | `Omit<EnhancedTableProps, 'rowKey' \| 'columns' \| 'data'>` | `{}`             | 透传给底层 TDesign Table 的属性  |
-| `showFilter`      | `boolean`                                                   | `true`           | 是否显示筛选器                   |
-| `showPagination`  | `boolean`                                                   | `true`           | 是否显示分页器                   |
-| `paginationProps` | `PaginationProps`                                           | `{}`             | 分页器配置                       |
-| `cacheKey`        | `string`                                                    | -                | 缓存键名，用于缓存分页和筛选状态 |
-| `cacheMode`       | `'localStorage' \| 'sessionStorage'`                        | `'localStorage'` | 缓存模式                         |
-| `request`         | `(params: any) => Promise<ResPageData<T>>`                  | -                | 列表查询函数                     |
-| `autoRequest`     | `boolean`                                                   | `true`           | 是否自动发起请求                 |
-| `customParams`    | `Record<string, any>`                                       | -                | 自定义初始化参数                 |
-| `requestBefore`   | `(params: Record<string, any>) => Record<string, any>`      | -                | 发起请求前处理参数的回调         |
-| `requestSuccess`  | `(data: ResPageData) => ResPageData`                        | -                | 请求成功后处理数据的回调         |
-| `requestFailed`   | `(error: unknown) => void`                                  | -                | 请求失败的错误处理回调           |
+| 名称                | 类型                                                                               | 默认值           | 说明                             |
+| ------------------- | ---------------------------------------------------------------------------------- | ---------------- | -------------------------------- |
+| `rowKey`            | `string`                                                                           | -                | 唯一标识一行数据的字段名，必需   |
+| `columns`           | `ProTableColumn[]`                                                                 | -                | 列配置数组，必需                 |
+| `data`              | `T[]`                                                                              | `[]`             | 表格数据，静态数据模式下使用     |
+| `showFilter`        | `boolean`                                                                          | `true`           | 是否显示筛选器                   |
+| `filterProps`       | `ProFilterProps`                                                                   | `{}`             | 筛选组件属性透传                 |
+| `extraFilters`      | `FilterItem[]`                                                                     | `[]`             | 额外的筛选条件，不与列绑定       |
+| `showPagination`    | `boolean`                                                                          | `true`           | 是否显示分页器                   |
+| `paginationProps`   | `PaginationProps`                                                                  | `{}`             | 分页器配置                       |
+| `cacheKey`          | `string`                                                                           | -                | 缓存键名，用于缓存分页和筛选状态 |
+| `cacheMode`         | `'localStorage' \| 'sessionStorage'`                                               | `'localStorage'` | 缓存模式                         |
+| `request`           | `(params: any) => Promise<any>`                                                    | -                | 列表查询函数                     |
+| `autoRequest`       | `boolean`                                                                          | `true`           | 是否自动发起请求                 |
+| `customParams`      | `Record<string, any>`                                                              | `{}`             | 自定义初始化参数                 |
+| `requestBefore`     | `(params: Record<string, any>) => Record<string, any>`                             | -                | 发起请求前处理参数的回调         |
+| `requestSuccess`    | `(data: BaseResponse<T>) => BaseResponse<T>`                                       | -                | 请求成功后处理数据的回调         |
+| `requestFailed`     | `(error: unknown) => void`                                                         | -                | 请求失败的错误处理回调           |
+| `beforeSearch`      | `(params: Record<string, any>) => Promise<boolean \| Record<string, any> \| void>` | -                | 搜索前置钩子                     |
+| `beforeClear`       | `() => boolean \| void`                                                            | -                | 清空前置钩子                     |
+| `tableFilterStyle`  | `CSSProperties`                                                                    | -                | 筛选器区域样式                   |
+| `tableLayoutStyle`  | `CSSProperties`                                                                    | -                | 布局容器样式                     |
+| `tableContentStyle` | `CSSProperties`                                                                    | -                | 内容区域样式                     |
+| `contentTopStyle`   | `CSSProperties`                                                                    | -                | 顶部区域样式                     |
+| `contentBodyStyle`  | `CSSProperties`                                                                    | -                | 表格主体样式                     |
+| `ellipsis`          | `boolean \| TooltipProps`                                                          | `true`           | 单元格省略号配置                 |
+
+**注意：** ProTable 继承了 TDesign EnhancedTable 的所有属性，除了 `rowKey`、`columns`、`data` 被重新定义外，其他所有 EnhancedTable 的属性都可以直接使用，如 `size`、`bordered`、`stripe`、`hover`、`loading`、`empty`、`maxHeight`、`fixedRows`、`headerAffixedTop`、`footerAffixedBottom`、`verticalAlign`、`showHeader`、`showSortColumnBgColor`、`resizable`、`tableLayout`、`dragSort`、`onRowClick`、`onCellClick`、`onSelectChange` 等。
 
 ### Events
 
-无自定义事件，所有事件都通过 `tableProps` 透传给底层表格组件。
+ProTable 继承了 TDesign EnhancedTable 的所有事件，常用事件包括：
+
+| 事件名           | 参数                                                                                                                                                                   | 说明           |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `onRowClick`     | `(context: { row: T; index: number; e: MouseEvent })`                                                                                                                  | 行点击事件     |
+| `onCellClick`    | `(context: { row: T; col: ProTableColumn<T>; rowIndex: number; colIndex: number; e: MouseEvent })`                                                                     | 单元格点击事件 |
+| `onSelectChange` | `(selectedRowKeys: Array<string \| number>, options: { selectedRowData: Array<T>; type: 'check' \| 'uncheck'; currentRowKey?: string \| number; currentRowData?: T })` | 选择变化事件   |
+| `onSortChange`   | `(sort: { sortBy: string; descending: boolean }, options: { col: ProTableColumn<T>; currentDataSource: Array<T> })`                                                    | 排序变化事件   |
+| `onPageChange`   | `(pageInfo: { current: number; previous: number; pageSize: number }, newDataSource: Array<T>)`                                                                         | 分页变化事件   |
+| `onExpandChange` | `(expandedRowKeys: Array<string \| number>, options: { expandedRowsData: Array<T>; currentRowKey: string \| number; currentRowData: T; type: 'expand' \| 'fold' })`    | 展开变化事件   |
+| `onDragSort`     | `(context: { currentIndex: number; current: T; targetIndex: number; target: T; data: T[]; newData: T[] })`                                                             | 拖拽排序事件   |
+
+更多事件请参考 [TDesign EnhancedTable 文档](https://tdesign.tencent.com/vue-next/components/table)。
 
 ### Slots
 
@@ -687,7 +710,7 @@ const data = ref([
 
 | 名称               | 类型                                              | 说明             |
 | ------------------ | ------------------------------------------------- | ---------------- |
-| `filterRef`        | `Ref<CFilterExpose \| null>`                      | 筛选器组件实例   |
+| `filterRef`        | `Ref<ProFilterExpose \| null>`                    | 筛选器组件实例   |
 | `enhancedTableRef` | `Ref<EnhancedTableInstanceFunctions<T> \| null>`  | 底层表格组件实例 |
 | `pagination`       | `Ref<PaginationProps \| undefined>`               | 分页配置对象     |
 | `getRequestParams` | `() => Record<string, any>`                       | 获取当前请求参数 |
@@ -696,10 +719,10 @@ const data = ref([
 
 ### ProTableColumn 配置
 
-| 名称       | 类型               | 默认值 | 说明                                         |
-| ---------- | ------------------ | ------ | -------------------------------------------- |
-| `cFilter`  | `FilterItem`       | -      | 筛选器配置，继承自 CFilter 组件的 FilterItem |
-| `children` | `ProTableColumn[]` | -      | 子列配置，用于多级表头                       |
+| 名称           | 类型               | 默认值 | 说明                                           |
+| -------------- | ------------------ | ------ | ---------------------------------------------- |
+| `filterConfig` | `FilterItem`       | -      | 筛选器配置，继承自 ProFilter 组件的 FilterItem |
+| `children`     | `ProTableColumn[]` | -      | 子列配置，用于多级表头                         |
 
 继承 TDesign `PrimaryTableCol` 的所有属性，如 `colKey`、`title`、`width`、`ellipsis` 等。
 
@@ -746,4 +769,418 @@ interface ResPageData<T = any> {
 <ProTable row-key="id" :columns="columns" :request="fetchData" :auto-request="true" />
 ```
 
-### 3.
+### 3. 带筛选的数据表格
+
+同时支持多种筛选条件的数据表格：
+
+```vue
+<ProTable row-key="id" :columns="columnsWithFilter" :request="fetchData" :extra-filters="extraFilters" />
+```
+
+### 4. 缓存状态的表格
+
+对于需要保持用户操作状态的表格：
+
+```vue
+<ProTable row-key="id" :columns="columns" :request="fetchData" cache-key="user-table" cache-mode="localStorage" />
+```
+
+### 5. 自定义操作列
+
+添加编辑、删除等操作按钮：
+
+```vue
+<template>
+  <ProTable row-key="id" :columns="columns" :request="fetchData">
+    <template #operation="{ row }">
+      <TButton size="small" @click="editRow(row)">编辑</TButton>
+      <TButton size="small" theme="danger" @click="deleteRow(row)">删除</TButton>
+    </template>
+  </ProTable>
+</template>
+```
+
+## 高级用法
+
+### 多级表头
+
+通过 `children` 属性可以创建多级表头：
+
+```vue
+<script setup>
+const columns = [
+  {
+    title: '基本信息',
+    children: [
+      { colKey: 'name', title: '姓名', width: 100 },
+      { colKey: 'age', title: '年龄', width: 80 }
+    ]
+  },
+  {
+    title: '联系信息',
+    children: [
+      { colKey: 'email', title: '邮箱', width: 180 },
+      { colKey: 'phone', title: '电话', width: 130 }
+    ]
+  },
+  { colKey: 'operation', title: '操作', width: 150 }
+]
+</script>
+```
+
+### 条件显示列
+
+通过 `visible` 属性可以根据条件动态显示或隐藏列：
+
+```vue
+<script setup>
+import { ref, computed } from 'vue'
+
+const showAdvanced = ref(false)
+
+const columns = [
+  { colKey: 'name', title: '姓名', width: 120 },
+  { colKey: 'age', title: '年龄', width: 80 },
+  {
+    colKey: 'salary',
+    title: '薪资',
+    width: 100,
+    visible: () => showAdvanced.value // 动态显示
+  },
+  {
+    colKey: 'bonus',
+    title: '奖金',
+    width: 100,
+    visible: showAdvanced.value // 静态显示
+  }
+]
+</script>
+```
+
+### 自定义筛选器
+
+使用 `filterConfig` 配置复杂的筛选条件：
+
+```vue
+<script setup>
+const columns = [
+  {
+    colKey: 'name',
+    title: '姓名',
+    filterConfig: {
+      type: 'input',
+      title: '姓名',
+      placeholder: '请输入姓名',
+      order: 1
+    }
+  },
+  {
+    colKey: 'createTime',
+    title: '创建时间',
+    filterConfig: {
+      type: 'date-range',
+      title: '创建时间',
+      order: 2
+    }
+  },
+  {
+    colKey: 'status',
+    title: '状态',
+    filterConfig: {
+      type: 'select',
+      title: '状态',
+      options: [
+        { label: '全部', value: '' },
+        { label: '启用', value: 'active' },
+        { label: '禁用', value: 'inactive' }
+      ],
+      order: 3
+    }
+  }
+]
+
+// 额外的筛选条件，不与列绑定
+const extraFilters = [
+  {
+    type: 'input',
+    title: '关键词',
+    colKey: 'keyword',
+    placeholder: '搜索关键词',
+    order: 0
+  }
+]
+</script>
+```
+
+### 自定义单元格渲染
+
+通过插槽或 `cell` 属性自定义单元格内容：
+
+```vue
+<template>
+  <ProTable row-key="id" :columns="columns" :data="data">
+    <!-- 使用插槽自定义 -->
+    <template #status="{ row }">
+      <TTag :theme="row.status === 'active' ? 'success' : 'danger'" variant="light">
+        {{ row.status === 'active' ? '启用' : '禁用' }}
+      </TTag>
+    </template>
+
+    <!-- 或者使用 cell 属性 -->
+    <template #avatar="{ row }">
+      <TAvatar :src="row.avatar" :alt="row.name" size="small" />
+    </template>
+  </ProTable>
+</template>
+
+<script setup>
+// 或者在列配置中使用 cell 函数
+const columns = [
+  { colKey: 'name', title: '姓名' },
+  {
+    colKey: 'status',
+    title: '状态',
+    // 注意：cell 函数的第一个参数是 h 函数，第二个参数才是上下文对象
+    cell: (h, { row }) => {
+      return row.status === 'active' ? '启用' : '禁用'
+    }
+  },
+  {
+    colKey: 'score',
+    title: '评分',
+    cell: (h, { row }) => {
+      return `${row.score}/100`
+    }
+  },
+  {
+    colKey: 'level',
+    title: '等级',
+    cell: (h, { row }) => {
+      // 使用 h 函数创建复杂的 VNode
+      return h(
+        'span',
+        {
+          style: {
+            color: row.level === 'high' ? '#e34d59' : row.level === 'medium' ? '#ed7b2f' : '#00a870'
+          }
+        },
+        `等级: ${row.level}`
+      )
+    }
+  }
+]
+</script>
+```
+
+**重要说明：**
+
+- 当使用 `cell` 属性时，函数的第一个参数是 Vue 的 `h` 渲染函数
+- 第二个参数才是包含 `{ row, rowIndex, col, colIndex }` 的上下文对象
+- 如果只需要返回简单的文本，可以直接返回字符串，无需使用 h 函数
+- 如果需要复杂的 HTML 结构或组件，建议使用 h 函数或者使用插槽方式
+
+### 自定义请求处理
+
+通过钩子函数对请求进行自定义处理：
+
+```vue
+<script setup>
+import { ref } from 'vue'
+import { MessagePlugin } from 'tdesign-vue-next'
+
+// 请求前处理参数
+const handleRequestBefore = params => {
+  // 添加公共参数
+  return {
+    ...params,
+    timestamp: Date.now(),
+    version: '1.0'
+  }
+}
+
+// 请求成功后处理数据
+const handleRequestSuccess = response => {
+  // 数据预处理
+  if (response.data) {
+    response.data = response.data.map(item => ({
+      ...item,
+      displayName: `${item.firstName} ${item.lastName}`
+    }))
+  }
+  return response
+}
+
+// 请求失败处理
+const handleRequestFailed = error => {
+  console.error('请求失败:', error)
+  MessagePlugin.error('数据加载失败，请稍后重试')
+}
+
+// 搜索前置钩子
+const handleBeforeSearch = async params => {
+  // 可以在这里做参数验证
+  if (!params.keyword && !params.status) {
+    MessagePlugin.warning('请至少输入一个搜索条件')
+    return false // 阻止搜索
+  }
+
+  // 或者修改搜索参数
+  return {
+    ...params,
+    searchType: 'advanced'
+  }
+}
+
+// 清空前置钩子
+const handleBeforeClear = () => {
+  // 可以在这里做确认操作
+  return confirm('确定要清空所有筛选条件吗？')
+}
+</script>
+
+<template>
+  <ProTable
+    row-key="id"
+    :columns="columns"
+    :request="fetchData"
+    :request-before="handleRequestBefore"
+    :request-success="handleRequestSuccess"
+    :request-failed="handleRequestFailed"
+    :before-search="handleBeforeSearch"
+    :before-clear="handleBeforeClear"
+  />
+</template>
+```
+
+### 表格联动
+
+多个表格之间的数据联动：
+
+```vue
+<template>
+  <div>
+    <!-- 主表格 -->
+    <ProTable
+      ref="mainTableRef"
+      row-key="id"
+      :columns="mainColumns"
+      :request="fetchMainData"
+      @row-click="handleMainRowClick"
+    />
+
+    <!-- 详情表格 -->
+    <ProTable
+      v-if="selectedMainRow"
+      ref="detailTableRef"
+      row-key="id"
+      :columns="detailColumns"
+      :request="fetchDetailData"
+      :custom-params="{ mainId: selectedMainRow.id }"
+      :auto-request="false"
+    />
+  </div>
+</template>
+
+<script setup>
+import { ref, watch } from 'vue'
+
+const mainTableRef = ref()
+const detailTableRef = ref()
+const selectedMainRow = ref(null)
+
+// 主表格行点击事件
+const handleMainRowClick = ({ row }) => {
+  selectedMainRow.value = row
+}
+
+// 监听选中行变化，触发详情表格刷新
+watch(
+  () => selectedMainRow.value,
+  newRow => {
+    if (newRow && detailTableRef.value) {
+      detailTableRef.value.getData()
+    }
+  }
+)
+</script>
+```
+
+## 样式定制
+
+### CSS 变量定制
+
+组件支持通过 CSS 变量进行样式定制：
+
+```css
+.pro-table {
+  /* 筛选器样式 */
+  --pro-table-filter-bg: #f8f9fa;
+  --pro-table-filter-padding: 16px;
+  --pro-table-filter-margin: 0 0 16px 0;
+
+  /* 布局样式 */
+  --pro-table-layout-gap: 16px;
+  --pro-table-content-bg: #ffffff;
+
+  /* 表格样式 */
+  --pro-table-header-bg: #f5f7fa;
+  --pro-table-border-color: #e6e8eb;
+}
+```
+
+### 通过 Props 定制样式
+
+```vue
+<template>
+  <ProTable
+    row-key="id"
+    :columns="columns"
+    :data="data"
+    :table-filter-style="{ background: '#f0f2f5', padding: '20px' }"
+    :table-layout-style="{ gap: '20px' }"
+    :content-top-style="{ padding: '16px 0' }"
+    :content-body-style="{ borderRadius: '8px' }"
+  />
+</template>
+```
+
+## 常见问题
+
+### Q: 如何禁用某些行的选择功能？
+
+A: 可以在列配置中使用 `disabled` 函数：
+
+```vue
+<script setup>
+const columns = [
+  {
+    colKey: 'row-select',
+    type: 'multiple',
+    disabled: ({ row }) => row.status === 'locked' // 锁定状态的行不可选
+  }
+  // ... 其他列
+]
+</script>
+```
+
+### Q: 如何处理大数据量的表格性能问题？
+
+A: 推荐使用以下策略：
+
+1. **启用分页**：控制单页数据量
+2. **虚拟滚动**：使用 TDesign 的虚拟滚动功能
+3. **懒加载**：按需加载数据
+4. **缓存策略**：合理使用缓存
+
+```vue
+<template>
+  <ProTable
+    row-key="id"
+    :columns="columns"
+    :request="fetchData"
+    :pagination-props="{ pageSize: 50, showQuickJumper: true }"
+    virtual-scroll
+    cache-key="large-table"
+  />
+</template>
+```

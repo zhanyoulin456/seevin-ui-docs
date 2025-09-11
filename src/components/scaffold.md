@@ -1,6 +1,6 @@
 # ProScaffold 页面脚手架组件
 
-一个页面布局脚手架组件，用于快速构建包含标准头部、内容和底部的页面布局，支持加载状态、返回按钮等常用功能。
+一个功能强大的页面布局脚手架组件，基于现代化的设计理念构建，用于快速搭建标准化的页面布局。组件提供了头部、内容和底部的完整布局结构，支持加载状态、返回按钮、内容宽度控制等特性，帮助开发者快速构建一致性的页面界面。
 
 <script setup>
 import { ref } from 'vue'
@@ -456,9 +456,216 @@ const refreshData = async () => {
 
 ### Events
 
-| 名称   | 类型         | 说明                                                                                                                                                                                     |
-| ------ | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `back` | `() => void` | 返回按钮点击时触发。如果 `showBackButton` 为 `true` 且未提供 `backButton` 插槽，则默认行为是调用 `router.back()`。如果提供了 `backButton` 插槽，则此事件不会触发，需要自行处理返回逻辑。 |
+组件无自定义事件，所有交互通过插槽内容处理。
+
+### Methods
+
+组件无暴露的方法。
+
+## 实际应用案例
+
+结合其他组件实现真实的业务场景。
+
+<DemoBox title="用户管理页面" description="完整的用户管理页面实现">
+  <ProScaffold show-back-button>
+    <template #header>
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-xl font-bold text-[color:var(--vp-c-text-1)] m-0">用户管理</h1>
+          <p class="text-sm text-[color:var(--vp-c-text-2)] mt-1 mb-0">管理系统用户信息</p>
+        </div>
+        <div class="flex gap-2">
+          <TButton variant="outline">导出</TButton>
+          <TButton theme="primary">新增用户</TButton>
+        </div>
+      </div>
+    </template>
+    
+    <div class="space-y-4">
+      <!-- 搜索区域 -->
+      <div class="bg-[color:var(--vp-c-bg-alt)] p-4 rounded">
+        <div class="flex gap-4 items-end">
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-[color:var(--vp-c-text-1)] mb-1">用户名</label>
+            <TInput placeholder="请输入用户名" style="width: 200px" />
+          </div>
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-[color:var(--vp-c-text-1)] mb-1">状态</label>
+            <TInput placeholder="选择状态" style="width: 150px" />
+          </div>
+          <div>
+            <TButton theme="primary">搜索</TButton>
+            <TButton variant="outline" class="ml-2">重置</TButton>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 数据表格 -->
+      <div class="bg-white border border-[color:var(--vp-c-border)] rounded">
+        <div class="p-4 border-b border-[color:var(--vp-c-border)]">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-[color:var(--vp-c-text-2)]">共 156 条记录</span>
+            <div class="flex gap-2">
+              <TButton size="small" variant="outline">批量删除</TButton>
+              <TButton size="small" variant="outline">批量导出</TButton>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <div class="space-y-3">
+            <div v-for="i in 5" :key="i" class="flex items-center justify-between p-3 border border-[color:var(--vp-c-border)] rounded">
+              <div class="flex items-center space-x-4">
+                <div class="w-8 h-8 bg-[color:var(--vp-c-brand)] rounded-full flex items-center justify-center text-white text-sm">
+                  U{{ i }}
+                </div>
+                <div>
+                  <div class="font-medium text-[color:var(--vp-c-text-1)]">用户{{ i }}</div>
+                  <div class="text-sm text-[color:var(--vp-c-text-2)]">user{{ i }}@example.com</div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">正常</span>
+                <TButton size="small" variant="text">编辑</TButton>
+                <TButton size="small" variant="text" theme="danger">删除</TButton>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <template #footer>
+      <div class="flex justify-between items-center w-full">
+        <span class="text-sm text-[color:var(--vp-c-text-2)]">显示第 1-10 条，共 156 条</span>
+        <div class="flex gap-2">
+          <TButton variant="outline" size="small">上一页</TButton>
+          <TButton size="small">1</TButton>
+          <TButton variant="outline" size="small">2</TButton>
+          <TButton variant="outline" size="small">3</TButton>
+          <TButton variant="outline" size="small">下一页</TButton>
+        </div>
+      </div>
+    </template>
+  </ProScaffold>
+</DemoBox>
+
+```vue
+<template>
+  <ProScaffold show-back-button>
+    <template #header>
+      <div class="flex justify-between items-center">
+        <div>
+          <h1>用户管理</h1>
+          <p class="text-sm text-gray-600">管理系统用户信息</p>
+        </div>
+        <div class="flex gap-2">
+          <TButton variant="outline">导出</TButton>
+          <TButton theme="primary" @click="showAddDialog = true">新增用户</TButton>
+        </div>
+      </div>
+    </template>
+
+    <div class="space-y-4">
+      <!-- 搜索区域 -->
+      <div class="bg-gray-50 p-4 rounded">
+        <div class="flex gap-4 items-end">
+          <div class="flex-1">
+            <label>用户名</label>
+            <TInput v-model="searchForm.username" placeholder="请输入用户名" />
+          </div>
+          <div class="flex-1">
+            <label>状态</label>
+            <TSelect v-model="searchForm.status" placeholder="选择状态" :options="statusOptions" />
+          </div>
+          <div>
+            <TButton theme="primary" @click="handleSearch">搜索</TButton>
+            <TButton variant="outline" @click="handleReset">重置</TButton>
+          </div>
+        </div>
+      </div>
+
+      <!-- 数据表格 -->
+      <ProTable :columns="columns" :data="tableData" :loading="loading" row-key="id" />
+    </div>
+
+    <template #footer>
+      <div class="flex justify-between items-center w-full">
+        <span class="text-sm text-gray-600"
+          >显示第 {{ pagination.current }}-{{ pagination.pageSize }} 条，共 {{ pagination.total }} 条</span
+        >
+        <TPagination
+          v-model="pagination.current"
+          :total="pagination.total"
+          :page-size="pagination.pageSize"
+          @change="handlePageChange"
+        />
+      </div>
+    </template>
+  </ProScaffold>
+</template>
+
+<script setup>
+import { ref, reactive } from 'vue'
+
+// 搜索表单
+const searchForm = reactive({
+  username: '',
+  status: ''
+})
+
+// 表格数据
+const tableData = ref([])
+const loading = ref(false)
+
+// 分页信息
+const pagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0
+})
+
+// 表格列配置
+const columns = [
+  { colKey: 'username', title: '用户名' },
+  { colKey: 'email', title: '邮箱' },
+  { colKey: 'status', title: '状态' },
+  { colKey: 'operation', title: '操作' }
+]
+
+// 状态选项
+const statusOptions = [
+  { label: '正常', value: 'active' },
+  { label: '禁用', value: 'disabled' }
+]
+
+// 事件处理
+const handleSearch = () => {
+  console.log('搜索:', searchForm)
+  loadTableData()
+}
+
+const handleReset = () => {
+  Object.assign(searchForm, { username: '', status: '' })
+  loadTableData()
+}
+
+const handlePageChange = page => {
+  pagination.current = page
+  loadTableData()
+}
+
+const loadTableData = async () => {
+  loading.value = true
+  try {
+    // 模拟 API 请求
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    // 更新表格数据
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+```
 
 ### Slots
 
@@ -483,3 +690,292 @@ const refreshData = async () => {
 | `.pro-scaffold__content__wrapper` | 内容区域包装器，提供滚动功能   |
 | `.pro-scaffold__content`          | 内容区域，居中显示并可设置宽度 |
 | `.pro-scaffold__footer`           | 底部区域容器，包含按钮样式     |
+
+## 样式变量
+
+| CSS 变量                  | 默认值 | 说明         |
+| ------------------------- | ------ | ------------ |
+| `--td-bg-color-container` | `#fff` | 容器背景色   |
+| `--td-shadow-1`           | `-`    | 底部阴影效果 |
+
+## 类型定义
+
+```typescript
+// Props 接口
+export interface ProScaffoldProps {
+  /** @description 是否显示加载状态 */
+  loading?: boolean
+  /** @description 是否显示返回按钮 */
+  showBackButton?: boolean
+  /** @description 内容区域宽度 */
+  width?: string | number
+}
+
+// 插槽接口
+export interface ProScaffoldSlots {
+  /** @description 页面主要内容 */
+  default?: () => VNode
+  /** @description 页面头部内容 */
+  header?: () => VNode
+  /** @description 页面底部内容 */
+  footer?: () => VNode
+  /** @description 自定义返回按钮 */
+  backButton?: () => VNode
+}
+```
+
+## 最佳实践
+
+### 布局原则
+
+1. **头部区域**：建议高度控制在 60-80px 之间，避免过高影响内容区域
+2. **内容区域**：使用 `flex: 1` 自适应高度，确保滚动正常
+3. **底部区域**：建议高度控制在 60-100px 之间，按钮数量不宜过多
+
+### 响应式设计
+
+```vue
+<template>
+  <ProScaffold :width="containerWidth">
+    <template #header>
+      <div class="flex flex-col md:flex-row md:justify-between md:items-center">
+        <h1 class="text-xl md:text-2xl">标题</h1>
+        <div class="flex gap-2 mt-2 md:mt-0">
+          <TButton>操作1</TButton>
+          <TButton>操作2</TButton>
+        </div>
+      </div>
+    </template>
+    <!-- 内容 -->
+  </ProScaffold>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import { useWindowSize } from '@vueuse/core'
+
+const { width } = useWindowSize()
+
+const containerWidth = computed(() => {
+  if (width.value < 768) return '100%'
+  if (width.value < 1024) return '90%'
+  return '1200px'
+})
+</script>
+```
+
+### 加载状态处理
+
+```vue
+<template>
+  <ProScaffold :loading="pageLoading">
+    <template #header>
+      <div class="flex justify-between items-center">
+        <h1>数据管理</h1>
+        <TButton theme="primary" :loading="submitLoading" :disabled="pageLoading" @click="handleSubmit"> 保存 </TButton>
+      </div>
+    </template>
+
+    <div v-if="!pageLoading">
+      <!-- 内容区域 -->
+    </div>
+  </ProScaffold>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+const pageLoading = ref(false) // 页面级加载
+const submitLoading = ref(false) // 操作级加载
+
+const handleSubmit = async () => {
+  submitLoading.value = true
+  try {
+    // 提交逻辑
+  } finally {
+    submitLoading.value = false
+  }
+}
+</script>
+```
+
+### 返回按钮处理
+
+```vue
+<template>
+  <ProScaffold show-back-button>
+    <template #backButton>
+      <TButton shape="round" variant="outline" size="small" @click="handleBack">
+        <ChevronLeftIcon />
+        {{ backButtonText }}
+      </TButton>
+    </template>
+    <!-- 其他内容 -->
+  </ProScaffold>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
+
+const backButtonText = computed(() => {
+  // 根据来源页面动态设置返回文案
+  const from = route.query.from
+  switch (from) {
+    case 'list':
+      return '返回列表'
+    case 'detail':
+      return '返回详情'
+    default:
+      return '返回'
+  }
+})
+
+const handleBack = () => {
+  // 检查是否有未保存的更改
+  if (hasUnsavedChanges.value) {
+    if (confirm('有未保存的更改，确定要离开吗？')) {
+      router.back()
+    }
+  } else {
+    router.back()
+  }
+}
+</script>
+```
+
+## 使用注意事项
+
+1. **高度设置**：确保父容器有明确的高度，否则脚手架布局可能不正常
+2. **滚动区域**：内容区域默认可滚动，避免在内容内部再设置滚动容器
+3. **按钮间距**：底部区域的按钮会自动添加 16px 的左边距
+4. **返回按钮位置**：返回按钮使用绝对定位，确保不与头部内容重叠
+5. **加载状态**：加载时会覆盖整个组件，注意处理用户交互
+
+## 与其他组件结合使用
+
+### 结合ProTable的列表页面
+
+```vue
+<template>
+  <ProScaffold show-back-button>
+    <template #header>
+      <div class="flex justify-between items-center">
+        <h1>数据列表</h1>
+        <div class="flex gap-2">
+          <ProSearch v-model="searchKeyword" @search="handleSearch" @clear="handleClear" />
+          <TButton theme="primary">新增</TButton>
+        </div>
+      </div>
+    </template>
+
+    <ProTable
+      :data="tableData"
+      :columns="columns"
+      :loading="loading"
+      :pagination="pagination"
+      @page-change="handlePageChange"
+    />
+
+    <template #footer>
+      <div class="flex justify-between items-center w-full">
+        <span class="text-sm text-gray-600"> 已选择 {{ selectedRows.length }} 项 </span>
+        <div class="flex gap-2">
+          <TButton :disabled="!selectedRows.length">批量删除</TButton>
+          <TButton theme="primary" :disabled="!selectedRows.length">批量导出</TButton>
+        </div>
+      </div>
+    </template>
+  </ProScaffold>
+</template>
+```
+
+### 结合ProForm的表单页面
+
+```vue
+<template>
+  <ProScaffold show-back-button width="800px">
+    <template #header>
+      <h1>{{ isEdit ? '编辑' : '新增' }}用户</h1>
+    </template>
+
+    <ProForm ref="formRef" v-model="formData" :rules="formRules" :columns="formColumns" label-width="120px" />
+
+    <template #footer>
+      <TButton @click="handleCancel">取消</TButton>
+      <TButton theme="primary" :loading="submitLoading" @click="handleSubmit">
+        {{ isEdit ? '更新' : '创建' }}
+      </TButton>
+    </template>
+  </ProScaffold>
+</template>
+```
+
+### 分步骤的向导页面
+
+```vue
+<template>
+  <ProScaffold show-back-button>
+    <template #header>
+      <div>
+        <h1>创建项目向导</h1>
+        <TSteps :current="currentStep" class="mt-4">
+          <TStep title="基本信息" />
+          <TStep title="配置选项" />
+          <TStep title="确认创建" />
+        </TSteps>
+      </div>
+    </template>
+
+    <div class="py-6">
+      <component :is="stepComponents[currentStep]" v-model="wizardData" />
+    </div>
+
+    <template #footer>
+      <TButton v-if="currentStep > 0" @click="handlePrevStep"> 上一步 </TButton>
+      <TButton v-if="currentStep < stepComponents.length - 1" theme="primary" @click="handleNextStep"> 下一步 </TButton>
+      <TButton v-else theme="primary" :loading="creating" @click="handleCreate"> 创建项目 </TButton>
+    </template>
+  </ProScaffold>
+</template>
+```
+
+## 常见问题
+
+### Q: 为什么内容区域没有滚动条？
+
+A: 请确保父容器有明确的高度设置。脚手架组件使用 `height: 100%`，需要父容器提供具体高度。
+
+```css
+/* 示例：设置页面容器高度 */
+.page-container {
+  height: 100vh; /* 或其他明确的高度值 */
+}
+```
+
+### Q: 返回按钮与头部内容重叠怎么办？
+
+A: 返回按钮使用绝对定位在左上角，建议在头部内容中预留左侧空间：
+
+```vue
+<template #header>
+  <div class="pl-16">
+    <!-- 预留返回按钮空间 -->
+    <h1>页面标题</h1>
+  </div>
+</template>
+```
+
+### Q: 如何自定义加载动画？
+
+A: 组件使用TDesign的v-loading指令，可以通过CSS变量自定义：
+
+```css
+.pro-scaffold {
+  --td-loading-color: #your-color;
+  --td-loading-size: 20px;
+}
+```

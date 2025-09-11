@@ -1,6 +1,6 @@
 # ProSearch 搜索框组件
 
-一个带有搜索按钮的输入框组件，支持自定义样式和事件处理。
+一个功能强大的搜索组件，基于 TDesign Vue Next 构建，支持多种尺寸、自定义样式、加载状态等特性。组件提供了灵活的配置选项和事件处理，适用于各种搜索场景。
 
 <script setup>
 import { ref } from 'vue'
@@ -23,6 +23,18 @@ const handleSearch = (value) => {
 
 const handleClear = () => {
   console.log('清空搜索')
+}
+
+// 表格搜索示例
+const tableSearchKeyword = ref('')
+
+const handleTableSearch = (value) => {
+  console.log('表格搜索:', value)
+  // 这里可以触发表格数据刷新
+}
+
+const handleTableClear = () => {
+  console.log('清空表格搜索')
 }
 
 const handleAsynProSearch = async (value) => {
@@ -277,7 +289,7 @@ const keyword2 = ref('')
 
 | 名称          | 类型                             | 默认值                     | 说明                               |
 | ------------- | -------------------------------- | -------------------------- | ---------------------------------- |
-| `v-model`     | `string`                         | `''`                       | 搜索关键字，支持双向绑定           |
+| `modelValue`  | `string`                         | `''`                       | 搜索关键字，支持 v-model 双向绑定  |
 | `size`        | `'small' \| 'medium' \| 'large'` | `'medium'`                 | 组件尺寸                           |
 | `placeholder` | `string`                         | `'搜索'`                   | 输入框占位符                       |
 | `width`       | `string \| number`               | `'240px'`                  | 组件宽度，数字会自动添加 `px` 单位 |
@@ -288,10 +300,11 @@ const keyword2 = ref('')
 
 ### Events
 
-| 名称     | 类型                      | 说明                         |
-| -------- | ------------------------- | ---------------------------- |
-| `search` | `(value: string) => void` | 点击搜索按钮或按下回车时触发 |
-| `clear`  | `() => void`              | 点击清空按钮时触发           |
+| 名称                | 类型                      | 说明                         |
+| ------------------- | ------------------------- | ---------------------------- |
+| `search`            | `(value: string) => void` | 点击搜索按钮或按下回车时触发 |
+| `clear`             | `() => void`              | 点击清空按钮时触发           |
+| `update:modelValue` | `(value: string) => void` | v-model 双向绑定更新事件     |
 
 ### Slots
 
@@ -305,10 +318,71 @@ const keyword2 = ref('')
 | ----------------- | ------------------------ | ------------ |
 | `--pro-search-bg` | `var(--td-gray-color-1)` | 搜索框背景色 |
 
-## 样式类名
+### 样式类名
 
 | 类名                  | 说明         |
 | --------------------- | ------------ |
 | `.pro-search`         | 搜索框根容器 |
 | `.pro-search__input`  | 输入框容器   |
 | `.pro-search__button` | 搜索按钮     |
+
+### 类型定义
+
+```typescript
+// 组件 Props 接口
+export interface ProSearchProps {
+  /** @description 组件尺寸 */
+  size?: 'small' | 'medium' | 'large'
+  /** @description 占位符 */
+  placeholder?: string
+  /** @description 组件宽度 */
+  width?: string | number
+  /** @description 搜索按钮加载状态 */
+  loading?: boolean
+  /** @description 搜索按钮文案 */
+  buttonText?: string
+  /** @description 是否显示搜索按钮 */
+  showButton?: boolean
+  /** @description 背景色 */
+  background?: string
+  /** @description 搜索关键字，支持 v-model 双向绑定 */
+  modelValue?: string
+}
+
+// 组件事件接口
+export interface ProSearchEmits {
+  /** @description 搜索事件 */
+  search: [value: string]
+  /** @description 清空事件 */
+  clear: []
+  /** @description v-model 更新事件 */
+  'update:modelValue': [value: string]
+}
+
+// 组件插槽接口
+export interface ProSearchSlots {
+  /** @description 自定义按钮内容 */
+  button?: () => VNode
+}
+```
+
+## 特性说明
+
+- **响应式设计**：支持多种尺寸和自适应宽度
+- **加载状态**：内置加载状态显示，提升用户体验
+- **事件处理**：支持搜索和清空事件，满足不同交互需求
+- **自定义样式**：支持背景色、宽度等样式定制
+- **插槽支持**：提供按钮插槽，支持完全自定义搜索按钮
+- **键盘交互**：支持回车键快速搜索
+- **无障碍支持**：良好的键盘导航和屏幕阅读器支持
+
+## 使用注意事项
+
+1. **v-model 绑定**：使用 `v-model` 进行双向数据绑定
+2. **宽度设置**：`width` 属性支持数字（自动添加px）和字符串（支持百分比、vw等单位）
+3. **事件处理**：`search` 事件在点击搜索按钮或按下回车时触发
+4. **样式定制**：通过 CSS 变量 `--pro-search-bg` 可以全局定制背景色
+5. **加载状态**：设置 `loading` 为 `true` 时，搜索按钮会显示加载动画
+6. **自定义按钮**：使用 `button` 插槽时，需要自行处理点击事件
+
+_继承 TDesign Input 组件的所有特性，详见 [TDesign Input API](https://tdesign.tencent.com/vue-next/components/input)_
