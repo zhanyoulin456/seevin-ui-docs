@@ -226,6 +226,7 @@ const linkageFormItems = computed(() => {
         type: 'input',
         name: 'position',
         label: '职位',
+        required: true,
         placeholder: '请输入职位'
       }
     )
@@ -259,8 +260,12 @@ const customFormData = ref({})
 
 // 事件处理
 const handleSubmit = async (formRef, formData, formName) => {
+  if (!formRef || !formRef.value) {
+    MessagePlugin.error('表单引用未找到')
+    return
+  }
   try {
-    const result = await formRef.value?.validate()
+    const result = await formRef.value.validate()
     if (result === true) {
       MessagePlugin.success(`${formName}提交成功！数据：${JSON.stringify(formData.value)}`)
       console.log(`${formName}数据:`, formData.value)
@@ -271,20 +276,90 @@ const handleSubmit = async (formRef, formData, formName) => {
   }
 }
 
-const handleReset = (formRef) => {
-  formRef.value?.reset()
+const handleReset = (formRef, formData) => {
+  if (!formRef || !formRef.value) {
+    MessagePlugin.error('表单引用未找到')
+    return
+  }
+  formRef.value.reset()
+  // 特殊处理动态表单的重置
+  if (formData && formData.value && formData.value.contacts) {
+    formData.value.contacts = [{ name: '', phone: '' }]
+  }
   MessagePlugin.info('表单已重置')
 }
 
 const handleValidate = async (formRef) => {
+  if (!formRef || !formRef.value) {
+    MessagePlugin.error('表单引用未找到')
+    return
+  }
   try {
-    const result = await formRef.value?.validate()
+    const result = await formRef.value.validate()
     if (result === true) {
       MessagePlugin.success('表单验证通过')
     }
   } catch (error) {
     MessagePlugin.error('表单验证失败')
   }
+}
+
+// 基础表单专用事件处理
+const handleBasicSubmit = async () => {
+  await handleSubmit(basicFormRef, basicFormData, '基础表单')
+}
+
+const handleBasicReset = () => {
+  handleReset(basicFormRef, basicFormData)
+}
+
+// 验证表单专用事件处理
+const handleValidationSubmit = async () => {
+  await handleSubmit(validationFormRef, validationFormData, '验证表单')
+}
+
+const handleValidationValidate = async () => {
+  await handleValidate(validationFormRef)
+}
+
+const handleValidationReset = () => {
+  handleReset(validationFormRef, validationFormData)
+}
+
+// 布局表单专用事件处理
+const handleLayoutSubmit = async () => {
+  await handleSubmit(layoutFormRef, layoutFormData, '布局表单')
+}
+
+const handleLayoutReset = () => {
+  handleReset(layoutFormRef, layoutFormData)
+}
+
+// 自定义表单专用事件处理
+const handleCustomSubmit = async () => {
+  await handleSubmit(customFormRef, customFormData, '自定义表单')
+}
+
+const handleCustomReset = () => {
+  handleReset(customFormRef, customFormData)
+}
+
+// 动态表单专用事件处理
+const handleDynamicSubmit = async () => {
+  await handleSubmit(dynamicFormRef, dynamicFormData, '动态表单')
+}
+
+const handleDynamicReset = () => {
+  handleReset(dynamicFormRef, dynamicFormData)
+}
+
+// 联动表单专用事件处理
+const handleLinkageSubmit = async () => {
+  await handleSubmit(linkageFormRef, linkageFormData, '联动表单')
+}
+
+const handleLinkageReset = () => {
+  handleReset(linkageFormRef, linkageFormData)
 }
 </script>
 
@@ -299,8 +374,8 @@ const handleValidate = async (formRef) => {
     v-model="basicFormData"
   />
   <div style="margin-top: 16px; display: flex; gap: 12px;">
-    <TButton theme="primary" @click="() => handleSubmit(basicFormRef, basicFormData, '基础表单')">提交</TButton>
-    <TButton theme="default" @click="() => handleReset(basicFormRef)">重置</TButton>
+    <TButton theme="primary" @click="handleBasicSubmit">提交</TButton>
+    <TButton theme="default" @click="handleBasicReset">重置</TButton>
   </div>
 </DemoBox>
 
@@ -370,9 +445,9 @@ const handleReset = () => {
     v-model="validationFormData"
   />
   <div style="margin-top: 16px; display: flex; gap: 12px;">
-    <TButton theme="primary" @click="() => handleSubmit(validationFormRef, validationFormData, '验证表单')">提交</TButton>
-    <TButton theme="default" @click="() => handleValidate(validationFormRef)">验证</TButton>
-    <TButton theme="default" @click="() => handleReset(validationFormRef)">重置</TButton>
+    <TButton theme="primary" @click="handleValidationSubmit">提交</TButton>
+    <TButton theme="default" @click="handleValidationValidate">验证</TButton>
+    <TButton theme="default" @click="handleValidationReset">重置</TButton>
   </div>
 </DemoBox>
 
@@ -455,8 +530,8 @@ const handleReset = () => {
     :gutter="[16, 16]"
   />
   <div style="margin-top: 16px; display: flex; gap: 12px;">
-    <TButton theme="primary" @click="() => handleSubmit(layoutFormRef, layoutFormData, '布局表单')">提交</TButton>
-    <TButton theme="default" @click="() => handleReset(layoutFormRef)">重置</TButton>
+    <TButton theme="primary" @click="handleLayoutSubmit">提交</TButton>
+    <TButton theme="default" @click="handleLayoutReset">重置</TButton>
   </div>
 </DemoBox>
 
@@ -515,7 +590,6 @@ const handleReset = () => {
   MessagePlugin.info('表单已重置')
 }
 </script>
-</script>
 ```
 
 ## 自定义渲染
@@ -529,8 +603,8 @@ const handleReset = () => {
     v-model="customFormData"
   />
   <div style="margin-top: 16px; display: flex; gap: 12px;">
-    <TButton theme="primary" @click="() => handleSubmit(customFormRef, customFormData, '自定义表单')">提交</TButton>
-    <TButton theme="default" @click="() => handleReset(customFormRef)">重置</TButton>
+    <TButton theme="primary" @click="handleCustomSubmit">提交</TButton>
+    <TButton theme="default" @click="handleCustomReset">重置</TButton>
   </div>
 </DemoBox>
 
@@ -602,9 +676,9 @@ const handleReset = () => {
     v-model="dynamicFormData"
   />
   <div style="margin-top: 16px; display: flex; gap: 12px;">
-    <TButton theme="primary" @click="() => handleSubmit(dynamicFormRef, dynamicFormData, '动态表单')">提交</TButton>
+    <TButton theme="primary" @click="handleDynamicSubmit">提交</TButton>
     <TButton theme="default" @click="addDynamicItem">添加项目</TButton>
-    <TButton theme="default" @click="() => handleReset(dynamicFormRef)">重置</TButton>
+    <TButton theme="default" @click="handleDynamicReset">重置</TButton>
   </div>
 </DemoBox>
 
@@ -672,8 +746,8 @@ const handleSubmit = async () => {
   try {
     const result = await formRef.value?.validate()
     if (result === true) {
-      MessagePlugin.success(`提交成功！数据：${JSON.stringify(formData.value)}`)
-      console.log('表单数据:', formData.value)
+      MessagePlugin.success(`提交成功！数据：${JSON.stringify(formData)}`)
+      console.log('表单数据:', formData)
     }
   } catch (error) {
     MessagePlugin.error('表单验证失败，请检查输入')
@@ -712,8 +786,8 @@ const handleReset = () => {
     v-model="linkageFormData"
   />
   <div style="margin-top: 16px; display: flex; gap: 12px;">
-    <TButton theme="primary" @click="() => handleSubmit(linkageFormRef, linkageFormData, '联动表单')">提交</TButton>
-    <TButton theme="default" @click="() => handleReset(linkageFormRef)">重置</TButton>
+    <TButton theme="primary" @click="handleLinkageSubmit">提交</TButton>
+    <TButton theme="default" @click="handleLinkageReset">重置</TButton>
   </div>
 </DemoBox>
 
@@ -817,7 +891,6 @@ const handleReset = () => {
   MessagePlugin.info('表单已重置')
 }
 </script>
-</script>
 ```
 
 ## API
@@ -861,8 +934,8 @@ _继承 TDesign Form 组件的所有属性（除了 `data`），详见 [TDesign 
 | `options`         | `Array<{label: string, value: any}>`                                                | -        | select、radio、checkbox 等组件的选项数据 |
 | `treeOptions`     | `any[]`                                                                             | -        | tree-select 组件的选项数据               |
 | `componentProps`  | `any`                                                                               | -        | 表单项组件属性透传                       |
-| `render`          | `(formData: Record<string, any>, item: ProFormItemConfig) => VNode`                 | -        | 自定义渲染函数                           |
 | `formItemProps`   | `Omit<FormItemProps, 'label' \| 'name' \| 'labelAlign' \| 'labelWidth' \| 'rules'>` | -        | FormItem 组件属性透传                    |
+| `render`          | `(formData: Record<string, any>, item: ProFormItemConfig) => VNode`                 | -        | 自定义渲染函数                           |
 
 ### Events
 
@@ -931,7 +1004,7 @@ _其他样式类名继承自 TDesign Form、Row、Col 等组件_
 
 ## 使用注意事项
 
-1. **必传属性**：`items` 是必传属性，且每个表单项必须包含 `type` 和 `name`
+1. **必传属性**：`items` 是必传属性，且每个表单项在没有配置render时必须包含 `type` 和 `name`，render优先级高于type，当type为layout时，说明此时为布局配置，只需要配置render
 2. **数据管理**：如果传递了 `modelValue`，组件会进行智能数据合并和同步
 3. **验证规则**：设置 `required: true` 会自动生成基础验证规则
 4. **动态表单**：使用计算属性 `computed` 来创建动态表单项

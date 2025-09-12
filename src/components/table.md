@@ -977,7 +977,7 @@ const columns = [
 - 当使用 `cell` 属性时，函数的第一个参数是 Vue 的 `h` 渲染函数
 - 第二个参数才是包含 `{ row, rowIndex, col, colIndex }` 的上下文对象
 - 如果只需要返回简单的文本，可以直接返回字符串，无需使用 h 函数
-- 如果需要复杂的 HTML 结构或组件，建议使用 h 函数或者使用插槽方式
+- 如果需要复杂的 HTML 结构或组件，建议使用 h 函数或者使用 jsx 语法
 
 ### 自定义请求处理
 
@@ -1140,47 +1140,6 @@ watch(
     :table-layout-style="{ gap: '20px' }"
     :content-top-style="{ padding: '16px 0' }"
     :content-body-style="{ borderRadius: '8px' }"
-  />
-</template>
-```
-
-## 常见问题
-
-### Q: 如何禁用某些行的选择功能？
-
-A: 可以在列配置中使用 `disabled` 函数：
-
-```vue
-<script setup>
-const columns = [
-  {
-    colKey: 'row-select',
-    type: 'multiple',
-    disabled: ({ row }) => row.status === 'locked' // 锁定状态的行不可选
-  }
-  // ... 其他列
-]
-</script>
-```
-
-### Q: 如何处理大数据量的表格性能问题？
-
-A: 推荐使用以下策略：
-
-1. **启用分页**：控制单页数据量
-2. **虚拟滚动**：使用 TDesign 的虚拟滚动功能
-3. **懒加载**：按需加载数据
-4. **缓存策略**：合理使用缓存
-
-```vue
-<template>
-  <ProTable
-    row-key="id"
-    :columns="columns"
-    :request="fetchData"
-    :pagination-props="{ pageSize: 50, showQuickJumper: true }"
-    virtual-scroll
-    cache-key="large-table"
   />
 </template>
 ```
