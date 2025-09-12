@@ -1,6 +1,6 @@
 {
-  "buildCommand": "pnpm docs:build",
+  "buildCommand": "npm run docs:build",
   "outputDirectory": ".vitepress/dist",
-  "installCommand": "pnpm install",
+  "installCommand": "npm install",
   "framework": null
 }
