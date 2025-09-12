@@ -24,18 +24,6 @@ npm install @seevin/common
 pnpm install @seevin/common
 ```
 
-### 完整安装
-
-如果需要同时使用组件库和工具库：
-
-```bash
-# npm
-npm install @seevin/ui @seevin/common
-
-# pnpm
-pnpm install @seevin/ui @seevin/common
-```
-
 ## 依赖说明
 
 ### 组件库依赖
@@ -45,11 +33,13 @@ pnpm install @seevin/ui @seevin/common
 ```json
 {
   "peerDependencies": {
-    "vue": "^3.3.0"
+    "tdesign-vue-next": "^1.2.0",
+    "vue": "^3.4.0",
+    "vue-router": "^4.5.1"
   },
   "dependencies": {
     "tdesign-icons-vue-next": "^0.3.6",
-    "tdesign-vue-next": "^1.5.1"
+    "tdesign-vue-next": "^1.2.0"
   }
 }
 ```
@@ -61,13 +51,13 @@ pnpm install @seevin/ui @seevin/common
 ```json
 {
   "dependencies": {
-    "axios": "^1.6.0",
+    "axios": "^1.11.0",
     "qs": "^6.14.0"
   }
 }
 ```
 
-工具库不依赖 Vue，可以在任何 JavaScript/TypeScript 项目中使用。
+工具库中 useEventBus 函数依赖 Vue， 请在 vue 项目使用。
 
 ## 浏览器兼容性
 

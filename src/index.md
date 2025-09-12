@@ -21,7 +21,7 @@ hero:
       link: /utils/
     - theme: alt
       text: 在 Gitlab 上查看
-      link: http://code.seevin.com/zhanyoulin/seevin
+      link: http://code.seevin.com/project/fe-packages
 
 features:
   - icon: 🎨
