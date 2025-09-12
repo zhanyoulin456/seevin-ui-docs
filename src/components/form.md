@@ -520,9 +520,9 @@ const handleReset = () => {
 
 ## 自定义渲染
 
-支持自定义渲染表单项，可以通过 `render` 函数或 `slot` 来实现复杂的表单项。
+支持自定义渲染表单项，可以通过 `render` 函数来实现复杂的表单项。
 
-<DemoBox title="自定义渲染" description="使用 render 函数或插槽自定义表单项">
+<DemoBox title="自定义渲染" description="使用 render 函数自定义表单项">
   <ProForm
     ref="customFormRef"
     :items="customFormItems"

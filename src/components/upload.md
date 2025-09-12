@@ -1,6 +1,6 @@
 # ProUpload 文件上传组件
 
-一个功能强大的文件上传组件，基于 TDesign Upload 组件深度封装，提供了阿里云 OSS 直传、文件类型自动验证、拖拽上传、图片预览、进度监控等企业级特性。组件支持全局配置和局部配置的灵活组合，内置了完善的错误处理和用户友好的提示机制，适用于各种文件上传场景。
+一个功能强大的文件上传组件，基于 TDesign Upload 组件深度封装，提供了阿里云 OSS 直传、文件类型自动验证进度监控等企业级特性。组件支持全局配置和局部配置的灵活组合，内置了完善的错误处理和用户友好的提示机制，适用于各种文件上传场景。
 
 ## 使用场景
 
@@ -353,7 +353,7 @@ const customUploadFn: ProUploadProps['requestMethod'] = files => {
 
 ## 全局配置与 Props
 
-`ProUpload` 组件的许多核心功能，如 `signature`、`rename`、`beforeUpload` 和 `onFail` 等，都支持两种配置方式：
+`ProUpload` 组件的许多核心功能，如 `signature`、`rename`、`beforeUpload` `requestMethod` 和 `onFail` 等，都支持两种配置方式：
 
 1.  **全局配置**：通过 `ProConfigProvider` 组件在应用根部进行统一配置。这对于需要全站统一上传行为的场景非常有用。
 2.  **Props 单独配置**：直接在 `ProUpload` 组件上通过 `props` 进行配置。
