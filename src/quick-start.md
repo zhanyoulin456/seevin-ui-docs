@@ -2,19 +2,25 @@
 
 ## 全量引入
 
+基础使用会全量注册所有组件，如果您的项目大规模使用组件，请放心使用这种方式
 在 main.ts 中引入所有组件：
 
 ```ts
 import { createApp } from 'vue'
-import TDesignUI from '@seevin/ui'
-import '@seevin/ui/style/index.css'
+import SeevinUI from '@seevin/ui'
+import '@seevin/ui/style/index.css' // 引入所有组件的样式
 
 import App from './App.vue'
 
 const app = createApp(App)
-app.use(TDesignUI)
+app.use(SeevinUI)
 app.mount('#app')
 ```
+
+> 避免重复注册（二选一）
+
+1.  全量注册：app.use(@seevin/ui) 后，所有 Pro\* 组件已全局可用；此时不要再单独 app.use(ProForm)
+2.  按需注册：不调用 app.use(@seevin/ui)，仅对需要的组件 app.use(ProForm)/app.use(ProTable) 或在组件内局部注册
 
 ## 按需引入
 
@@ -24,18 +30,15 @@ app.mount('#app')
 <template>
   <div>
     <ProSearch v-model="searchValue" @search="handleSearch" />
-    <ProTable :data="tableData" />
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import { ProSearch, ProTable } from '@seevin/ui'
+import { ProSearch } from '@seevin/ui'
 import '@seevin/ui/components/Search/style.css'
-import '@seevin/ui/components/Table/style.css'
 
 const searchValue = ref('')
-const tableData = ref([])
 
 const handleSearch = value => {
   console.log('搜索内容:', value)
@@ -59,19 +62,40 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import Components from 'unplugin-vue-demos/vite'
 import AutoImport from 'unplugin-auto-import/vite'
+import { TDesignResolver } from 'unplugin-vue-components/resolvers'
 import { SeevinUIResolver } from '@seevin/ui'
 
 export default defineConfig({
   plugins: [
     vue(),
     AutoImport({
-      resolvers: [SeevinUIResolver()]
+      resolvers: [
+        TDesignResolver({
+          library: 'vue-next',
+          resolveIcons: true
+        })
+      ]
     }),
     Components({
       resolvers: [
-        SeevinUIResolver({
-          resolveIcons: true // 自动解析图标组件
-        })
+        TDesignResolver({
+          library: 'vue-next',
+          resolveIcons: true
+        }),
+        {
+          type: 'directive',
+          resolve: name => {
+            if (name === 'Loading') {
+              return {
+                name: 'vLoading',
+                from: `tdesign-vue-next/esm/loading/directive`
+              }
+            } else {
+              return
+            }
+          }
+        },
+        SeevinUIResolver()
       ]
     })
   ]
@@ -89,13 +113,33 @@ const { SeevinUIResolver } = require('@seevin/ui')
 module.exports = {
   plugins: [
     AutoImport({
-      resolvers: [SeevinUIResolver()]
+      resolvers: [
+        TDesignResolver({
+          library: 'vue-next',
+          resolveIcons: true
+        })
+      ]
     }),
     Components({
       resolvers: [
-        SeevinUIResolver({
+        TDesignResolver({
+          library: 'vue-next',
           resolveIcons: true
-        })
+        }),
+        {
+          type: 'directive',
+          resolve: name => {
+            if (name === 'Loading') {
+              return {
+                name: 'vLoading',
+                from: `tdesign-vue-next/esm/loading/directive`
+              }
+            } else {
+              return
+            }
+          }
+        },
+        SeevinUIResolver()
       ]
     })
   ]
@@ -156,14 +200,18 @@ import '@seevin/ui/style/index.css'
 
 ### 按需导入样式
 
-使用自动导入时，样式会自动按需加载。手动导入时：
+使用自动导入时，组件样式会自动按需加载，无需手动引入，只需要导入基础样式。
 
 ```ts
 // 导入基础样式
 import '@seevin/ui/style/base.css'
+```
 
-// 导入重置样式（可选，用于统一 TDesign 组件样式）
-import '@seevin/ui/style/reset.css'
+使用手动导入时：
+
+```ts
+// 导入基础样式
+import '@seevin/ui/style/base.css'
 
 // 导入单个组件样式
 import '@seevin/ui/components/Search/style.css'
@@ -172,14 +220,18 @@ import '@seevin/ui/components/Table/style.css'
 
 #### 重置样式说明
 
-重置样式 (`reset.css`) 包含了对 TDesign 组件的样式调整，主要包括：
+@seevin/ui对TDesign组件的样式进行了调整，用户可导入直接覆盖tdesign样式，主要包括：
 
 - **Dialog 组件**：调整对话框内容区域的内边距和文字颜色，统一按钮最小宽度
 - **Drawer 组件**：设置抽屉边框颜色，调整底部按钮布局和最小宽度
 
 ```ts
-// 如果你需要这些样式调整，可以单独引入
+// 导入内置的重置样式文件
 import '@seevin/ui/style/reset.css'
+
+// 也可以单独某个组件的重置样式文件
+import '@seevin/ui/style/reset/dialog.css'
+import '@seevin/ui/style/reset/drawer.css'
 
 // 或者在全量引入时已经包含了重置样式
 import '@seevin/ui/style/index.css' // 已包含 reset.css
@@ -187,27 +239,67 @@ import '@seevin/ui/style/index.css' // 已包含 reset.css
 
 ## 工具库使用示例
 
-## 工具库引入
-
-引入工具库中的实用工具：
+### HTTP 客户端
 
 ```ts
 import { HttpClient } from '@seevin/common'
 
-// 创建 HTTP 客户端实例
-const httpClient = new HttpClient({
-  baseURL: 'https://api.example.com',
-  timeout: 30000
-})
+// 创建 HTTP 客户端
+import { MessagePlugin } from 'tdesign-vue-next'
+import { HttpClient, axios, type AxiosError } from '@seevin/common'
+import { checkNetWorkStatus } from '@seevin/ui'
+import { useUserStore } from '@/stores/modules/user'
 
-// 使用客户端发送请求
-const response = await httpClient.get('/users')
-console.log(response.data)
+export default new HttpClient({
+  baseURL: import.meta.env.PUBLIC_BASE_API,
+  interceptors: {
+    request: [
+      {
+        onFulfilled: config => {
+          const userStore = useUserStore()
+          const token = userStore.token
+          config.headers.set('Authorization', `Bearer ${token}`)
+          return config
+        }
+      }
+    ],
+    response: [
+      {
+        onFulfilled: response => {
+          const resData = response.data
+          if (resData.code !== 200) {
+            MessagePlugin.error(resData.msg || '服务异常，请稍后重试')
+            throw response
+          }
+          return response
+        },
+        onRejected: (error: AxiosError) => {
+          if (!axios.isCancel(error)) {
+            // 请求超时 && 网络错误单独判断，没有 response
+            if ((error as AxiosError).message.indexOf('timeout') !== -1) MessagePlugin.error('请求超时！请您稍后重试')
+            if ((error as AxiosError).message.indexOf('Network Error') !== -1)
+              MessagePlugin.error('网络错误！请您稍后重试')
+            // 根据服务器响应的错误状态码，做不同的处理
+            if ((error as AxiosError).response) checkNetWorkStatus((error as AxiosError)!.response!.status)
+          }
+          return Promise.reject(error)
+        }
+      }
+    ]
+  }
+})
 ```
 
-### HTTP 客户端
+```ts
+// src/api/modules/user/index.ts
+// 使用客户端发送请求
+export const userListAPI = (data: ReqParams) => {
+  return http.post<ResParams>('/user/list', data)
+}
+```
 
 ```vue
+<!-- 组件中使用 -->
 <template>
   <div>
     <TButton @click="fetchUsers" :loading="loading">获取用户数据</TButton>
@@ -222,44 +314,16 @@ console.log(response.data)
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { HttpClient } from '@seevin/common'
+import { userListAPI } from '@/api/modules/user'
 
 const loading = ref(false)
 const users = ref([])
 
-// 创建 HTTP 客户端
-const httpClient = new HttpClient({
-  baseURL: 'https://jsonplaceholder.typicode.com',
-  timeout: 10000,
-  interceptors: {
-    request: [
-      {
-        onFulfilled: config => {
-          console.log('发送请求:', config.url)
-          return config
-        }
-      }
-    ],
-    response: [
-      {
-        onFulfilled: response => {
-          console.log('请求成功:', response.data)
-          return response
-        },
-        onRejected: error => {
-          console.error('请求失败:', error.message)
-          return Promise.reject(error)
-        }
-      }
-    ]
-  }
-})
-
 const fetchUsers = async () => {
   loading.value = true
   try {
-    const response = await httpClient.get('/users')
-    users.value = response.data || response // 处理不同的响应格式
+    const response = await userListAPI({ page: 1, limit: 10 })
+    users.value = response.data
   } catch (error) {
     console.error('获取用户失败:', error)
   } finally {
@@ -271,98 +335,6 @@ onMounted(() => {
   fetchUsers()
 })
 </script>
-```
-
-## 开始使用
-
-现在你可以开始使用组件了！以下是一个完整的示例：
-
-```vue
-<template>
-  <div class="app">
-    <h1>@seevin/ui 示例</h1>
-
-    <!-- 搜索组件 -->
-    <ProSearch v-model="searchKeyword" placeholder="请输入搜索关键字" @search="handleSearch" @clear="handleClear" />
-
-    <!-- 筛选组件 -->
-    <ProFilter :items="filterConditions" @search="handleFilterSearch" @clear="handleFilterClear" />
-
-    <!-- 表格组件 -->
-    <ProTable size="medium" />
-
-    <!-- 页面脚手架 -->
-    <ProScaffold :loading="loading" show-back-button width="800px">
-      <template #header>
-        <h2>页面标题</h2>
-      </template>
-
-      <div>
-        <p>这里是页面内容</p>
-      </div>
-
-      <template #footer>
-        <TButton variant="outline">取消</TButton>
-        <TButton theme="primary">保存</TButton>
-      </template>
-    </ProScaffold>
-  </div>
-</template>
-
-<script setup>
-import { ref } from 'vue'
-
-const searchKeyword = ref('')
-const loading = ref(false)
-
-const filterConditions = ref([
-  {
-    title: '状态',
-    colKey: 'status',
-    type: 'select',
-    options: [
-      { label: '启用', value: '1' },
-      { label: '禁用', value: '0' }
-    ]
-  },
-  {
-    title: '创建时间',
-    colKey: 'createTime',
-    type: 'dateRange'
-  }
-])
-
-const handleSearch = value => {
-  console.log('搜索:', value)
-}
-
-const handleClear = () => {
-  console.log('清空搜索')
-}
-
-const handleFilterSearch = params => {
-  console.log('筛选参数:', params)
-}
-
-const handleFilterClear = () => {
-  console.log('清空筛选')
-}
-</script>
-```
-
-## TypeScript 支持
-
-组件库提供了完整的 TypeScript 类型定义：
-
-```ts
-import type { ProSearchProps, ProFilterProps, ProTableProps, ProScaffoldProps } from '@seevin/ui'
-
-// 使用类型
-const searchProps: CSearchProps = {
-  placeholder: '搜索',
-  size: 'medium',
-  loading: false
-}
 ```
 
 ## 下一步
