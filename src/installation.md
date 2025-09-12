@@ -2,7 +2,7 @@
 
 ## 包管理器
 
-使用 npm 或 pnpm 安装 @seevin/ui 组件库和 @seevin/common 工具库。
+使用 pnpm 或 npm 安装 @seevin/ui 组件库和 @seevin/common 工具库。
 
 ### 组件库安装
 
@@ -30,7 +30,7 @@ npm install @seevin/common@latest
 
 ### 组件库依赖
 
-@seevin/ui 基于 TDesign Vue Next 构建，因此需要确保项目中已安装 Vue 3.3+：
+@seevin/ui 基于 TDesign Vue Next 构建，因此需要确保项目中已安装 Vue 3.4.0+：
 
 ```json
 {

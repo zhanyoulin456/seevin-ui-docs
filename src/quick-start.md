@@ -51,7 +51,7 @@ const handleSearch = value => {
 使用 `unplugin-vue-components` 和 `unplugin-auto-import` 实现自动导入：
 
 ```bash
-pnpm install unplugin-vue-demos unplugin-auto-import -D
+pnpm install unplugin-vue-components unplugin-auto-import -D
 ```
 
 **Vite 配置：**
@@ -60,7 +60,7 @@ pnpm install unplugin-vue-demos unplugin-auto-import -D
 // vite.config.ts
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import Components from 'unplugin-vue-demos/vite'
+import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { TDesignResolver } from 'unplugin-vue-components/resolvers'
 import { SeevinUIResolver } from '@seevin/ui'
@@ -106,7 +106,7 @@ export default defineConfig({
 
 ```js
 // webpack.config.js
-const Components = require('unplugin-vue-demos/webpack')
+const Components = require('unplugin-vue-components/webpack')
 const AutoImport = require('unplugin-auto-import/webpack')
 const { SeevinUIResolver } = require('@seevin/ui')
 

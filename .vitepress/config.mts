@@ -64,7 +64,9 @@ export default defineConfig({
         text: '工具库',
         items: [
           { text: '概览', link: '/utils/' },
-          { text: 'HttpClient HTTP客户端', link: '/utils/http-client' }
+          { text: 'HttpClient HTTP客户端', link: '/utils/http-client' },
+          { text: '通用工具', link: '/utils/common-utils' },
+          { text: 'EventBus 事件总线', link: '/utils/eventbus' }
         ]
       },
       {

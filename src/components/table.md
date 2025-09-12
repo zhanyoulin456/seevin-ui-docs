@@ -645,32 +645,32 @@ const data = ref([
 
 ### Props
 
-| 名称                | 类型                                                                               | 默认值           | 说明                             |
-| ------------------- | ---------------------------------------------------------------------------------- | ---------------- | -------------------------------- |
-| `rowKey`            | `string`                                                                           | -                | 唯一标识一行数据的字段名，必需   |
-| `columns`           | `ProTableColumn[]`                                                                 | -                | 列配置数组，必需                 |
-| `data`              | `T[]`                                                                              | `[]`             | 表格数据，静态数据模式下使用     |
-| `showFilter`        | `boolean`                                                                          | `true`           | 是否显示筛选器                   |
-| `filterProps`       | `ProFilterProps`                                                                   | `{}`             | 筛选组件属性透传                 |
-| `extraFilters`      | `FilterItem[]`                                                                     | `[]`             | 额外的筛选条件，不与列绑定       |
-| `showPagination`    | `boolean`                                                                          | `true`           | 是否显示分页器                   |
-| `paginationProps`   | `PaginationProps`                                                                  | `{}`             | 分页器配置                       |
-| `cacheKey`          | `string`                                                                           | -                | 缓存键名，用于缓存分页和筛选状态 |
-| `cacheMode`         | `'localStorage' \| 'sessionStorage'`                                               | `'localStorage'` | 缓存模式                         |
-| `request`           | `(params: any) => Promise<any>`                                                    | -                | 列表查询函数                     |
-| `autoRequest`       | `boolean`                                                                          | `true`           | 是否自动发起请求                 |
-| `customParams`      | `Record<string, any>`                                                              | `{}`             | 自定义初始化参数                 |
-| `requestBefore`     | `(params: Record<string, any>) => Record<string, any>`                             | -                | 发起请求前处理参数的回调         |
-| `requestSuccess`    | `(data: BaseResponse<T>) => BaseResponse<T>`                                       | -                | 请求成功后处理数据的回调         |
-| `requestFailed`     | `(error: unknown) => void`                                                         | -                | 请求失败的错误处理回调           |
-| `beforeSearch`      | `(params: Record<string, any>) => Promise<boolean \| Record<string, any> \| void>` | -                | 搜索前置钩子                     |
-| `beforeClear`       | `() => boolean \| void`                                                            | -                | 清空前置钩子                     |
-| `tableFilterStyle`  | `CSSProperties`                                                                    | -                | 筛选器区域样式                   |
-| `tableLayoutStyle`  | `CSSProperties`                                                                    | -                | 布局容器样式                     |
-| `tableContentStyle` | `CSSProperties`                                                                    | -                | 内容区域样式                     |
-| `contentTopStyle`   | `CSSProperties`                                                                    | -                | 顶部区域样式                     |
-| `contentBodyStyle`  | `CSSProperties`                                                                    | -                | 表格主体样式                     |
-| `ellipsis`          | `boolean \| TooltipProps`                                                          | `true`           | 单元格省略号配置                 |
+| 名称                | 类型                                                                                                                                                                                                                          | 默认值                                                                           | 说明                             |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------- |
+| `rowKey`            | `string`                                                                                                                                                                                                                      | -                                                                                | 唯一标识一行数据的字段名，必需   |
+| `columns`           | `ProTableColumn[]`                                                                                                                                                                                                            | -                                                                                | 列配置数组，必需                 |
+| `data`              | `T[]`                                                                                                                                                                                                                         | `[]`                                                                             | 表格数据，静态数据模式下使用     |
+| `showFilter`        | `boolean`                                                                                                                                                                                                                     | `true`                                                                           | 是否显示筛选器                   |
+| `filterProps`       | `ProFilterProps`                                                                                                                                                                                                              | `{}`                                                                             | 筛选组件属性透传                 |
+| `extraFilters`      | `FilterItem[]`                                                                                                                                                                                                                | `[]`                                                                             | 额外的筛选条件，不与列绑定       |
+| `showPagination`    | `boolean`                                                                                                                                                                                                                     | `true`                                                                           | 是否显示分页器                   |
+| `paginationProps`   | `PaginationProps`                                                                                                                                                                                                             | `{}`                                                                             | 分页器配置                       |
+| `cacheKey`          | `string`                                                                                                                                                                                                                      | -                                                                                | 缓存键名，用于缓存分页和筛选状态 |
+| `cacheMode`         | `'localStorage' \| 'sessionStorage'`                                                                                                                                                                                          | `'localStorage'`                                                                 | 缓存模式                         |
+| `request`           | `(params: any) => Promise<any>`                                                                                                                                                                                               | -                                                                                | 列表查询函数                     |
+| `autoRequest`       | `boolean`                                                                                                                                                                                                                     | `true`                                                                           | 是否自动发起请求                 |
+| `customParams`      | `Record<string, any>`                                                                                                                                                                                                         | `{}`                                                                             | 自定义初始化参数                 |
+| `requestBefore`     | `(params: Record<string, any>) => Record<string, any>`                                                                                                                                                                        | -                                                                                | 发起请求前处理参数的回调         |
+| `requestSuccess`    | `(data: BaseResponse<T>) => BaseResponse<T>`                                                                                                                                                                                  | -                                                                                | 请求成功后处理数据的回调         |
+| `requestFailed`     | `(error: unknown) => void`                                                                                                                                                                                                    | -                                                                                | 请求失败的错误处理回调           |
+| `beforeSearch`      | `(params: Record<string, any>) => Promise<boolean \| Record<string, any> \| void>`                                                                                                                                            | -                                                                                | 搜索前置钩子                     |
+| `beforeClear`       | `() => boolean \| void`                                                                                                                                                                                                       | -                                                                                | 清空前置钩子                     |
+| `tableFilterStyle`  | `CSSProperties`                                                                                                                                                                                                               | -                                                                                | 筛选器区域样式                   |
+| `tableLayoutStyle`  | `CSSProperties`                                                                                                                                                                                                               | -                                                                                | 布局容器样式                     |
+| `tableContentStyle` | `CSSProperties`                                                                                                                                                                                                               | -                                                                                | 内容区域样式                     |
+| `contentTopStyle`   | `CSSProperties`                                                                                                                                                                                                               | -                                                                                | 顶部区域样式                     |
+| `contentBodyStyle`  | `CSSProperties`                                                                                                                                                                                                               | -                                                                                | 表格主体样式                     |
+| `ellipsis`          | `boolean \| TNode<{ row: T; rowIndex: number; col: ProTableColumn<T>; colIndex: number }> \| TooltipProps \| { props: TooltipProps; content: TNode<{ row: T; rowIndex: number; col: ProTableColumn<T>; colIndex: number }> }` | `{ props: { theme: 'light' }, content: (_h, { row, col }) => row[col.colKey!] }` | 单元格省略号配置                 |
 
 **注意：** ProTable 继承了 TDesign EnhancedTable 的所有属性，除了 `rowKey`、`columns`、`data` 被重新定义外，其他所有 EnhancedTable 的属性都可以直接使用，如 `size`、`bordered`、`stripe`、`hover`、`loading`、`empty`、`maxHeight`、`fixedRows`、`headerAffixedTop`、`footerAffixedBottom`、`verticalAlign`、`showHeader`、`showSortColumnBgColor`、`resizable`、`tableLayout`、`dragSort`、`onRowClick`、`onCellClick`、`onSelectChange` 等。
 
@@ -1106,27 +1106,6 @@ watch(
 ```
 
 ## 样式定制
-
-### CSS 变量定制
-
-组件支持通过 CSS 变量进行样式定制：
-
-```css
-.pro-table {
-  /* 筛选器样式 */
-  --pro-table-filter-bg: #f8f9fa;
-  --pro-table-filter-padding: 16px;
-  --pro-table-filter-margin: 0 0 16px 0;
-
-  /* 布局样式 */
-  --pro-table-layout-gap: 16px;
-  --pro-table-content-bg: #ffffff;
-
-  /* 表格样式 */
-  --pro-table-header-bg: #f5f7fa;
-  --pro-table-border-color: #e6e8eb;
-}
-```
 
 ### 通过 Props 定制样式
 

@@ -968,14 +968,3 @@ A: 返回按钮使用绝对定位在左上角，建议在头部内容中预留�
   </div>
 </template>
 ```
-
-### Q: 如何自定义加载动画？
-
-A: 组件使用TDesign的v-loading指令，可以通过CSS变量自定义：
-
-```css
-.pro-scaffold {
-  --td-loading-color: #your-color;
-  --td-loading-size: 20px;
-}
-```
