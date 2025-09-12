@@ -218,8 +218,8 @@ const handleClear = () => {
 <ProSearch v-model="keyword4" @search="handleSearch">
   <template #button>
     <TButton theme="primary" size="small">
-      <SearchIcon />
-      查询
+      <template #icon><SearchIcon /></template>
+      搜索
     </TButton>
   </template>
 </ProSearch>
@@ -230,8 +230,8 @@ const handleClear = () => {
   <ProSearch v-model="keyword" @search="handleSearch">
     <template #button>
       <TButton theme="primary" size="small">
-        <SearchIcon />
-        查询
+        <template #icon><SearchIcon /></template>
+        搜索
       </TButton>
     </template>
   </ProSearch>

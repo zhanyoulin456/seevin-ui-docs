@@ -592,9 +592,7 @@ const getFilterData = () => {
 }
 
 const clearAllFilter = () => {
-  conditions.value.forEach(item => {
-    item.value = Array.isArray(item.value) ? [] : ''
-  })
+  filterRef.value?.clearFilterValues()
 }
 
 const setFilterData = () => {
@@ -741,35 +739,35 @@ const clearFilter = () => {
 
 ### FilterItem 配置
 
-| 名称             | 类型                                       | 默认值 | 说明                              |
-| ---------------- | ------------------------------------------ | ------ | --------------------------------- |
-| `type`           | `FilterComponentType`                      | -      | 筛选组件类型（必传）              |
-| `value`          | `string \| number \| (string \| number)[]` | -      | 筛选值，支持双向绑定（必传）      |
-| `title`          | `string`                                   | -      | 筛选项标题，用于显示和placeholder |
-| `colKey`         | `string`                                   | -      | 字段键名，用于筛选结果的key       |
-| `order`          | `number`                                   | -      | 排序，数字越小越靠前              |
-| `width`          | `string \| number`                         | -      | 组件宽度，数字会自动添加px单位    |
-| `style`          | `CSSProperties`                            | -      | 筛选项组件自定义样式              |
-| `class`          | `string`                                   | -      | 筛选项组件自定义类名              |
-| `options`        | `ProFilterSelectOption[]`                  | -      | 下拉选择的选项数据                |
-| `treeOptions`    | `TreeOptionData[]`                         | -      | 树形选择的数据                    |
-| `closable`       | `boolean`                                  | `true` | 筛选结果标签是否可关闭删除        |
-| `resultTitle`    | `string`                                   | -      | 筛选结果展示标题，优先级高于title |
-| `componentProps` | `any`                                      | -      | 透传给筛选组件的属性              |
-| `render`         | `(item: FilterItem) => VNode`              | -      | 自定义渲染函数                    |
-| `visible`        | `boolean \| function`                      | -      | 控制当前筛选项是否显示            |
+| 名称             | 类型                                                                              | 默认值 | 说明                                                                                                 |
+| ---------------- | --------------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------- |
+| `type`           | `FilterComponentType`                                                             | -      | 筛选组件类型（必传）                                                                                 |
+| `value`          | `string \| number \| (string \| number)[]`                                        | -      | 筛选值，支持双向绑定（必传）                                                                         |
+| `title`          | `string`                                                                          | -      | 用于筛选区域placeholder展示，单独使用ProFilter组件时必传，结合ProTable使用可不传，默认取column.title |
+| `colKey`         | `string`                                                                          | -      | 字段key，单独使用ProFilter组件时必传，结合ProTable使用可不传，默认取column.colKey                    |
+| `order`          | `number`                                                                          | -      | 排序，数字越小越靠前                                                                                 |
+| `width`          | `string \| number`                                                                | -      | 组件宽度，数字会自动添加px单位                                                                       |
+| `style`          | `CSSProperties`                                                                   | -      | 筛选项组件自定义样式                                                                                 |
+| `class`          | `string`                                                                          | -      | 筛选项组件自定义类名                                                                                 |
+| `options`        | `ProFilterSelectOption[]`                                                         | -      | 下拉选择的选项数据                                                                                   |
+| `treeOptions`    | `TreeOptionData[]`                                                                | -      | 树形选择的数据                                                                                       |
+| `closable`       | `boolean`                                                                         | `true` | 筛选结果标签是否可关闭删除                                                                           |
+| `resultTitle`    | `string`                                                                          | -      | 筛选结果展示标题，优先级高于title                                                                    |
+| `componentProps` | `any`                                                                             | -      | 透传给筛选组件的属性                                                                                 |
+| `visible`        | `boolean \| (allValues: Record<string, any>, currentItem: FilterItem) => boolean` | -      | 控制当前筛选项是否显示                                                                               |
+| `render`         | `(item: FilterItem) => VNode`                                                     | -      | 自定义筛选项渲染函数                                                                                 |
 
 ### FilterComponentType
 
 筛选组件类型枚举：
 
 - `'input'` - 文本输入框
+- `'inputNumber'` - 数字输入框
 - `'select'` - 单选下拉框
 - `'multipleSelect'` - 多选下拉框
+- `'treeSelect'` - 树形选择器
 - `'date'` - 日期选择器
 - `'dateRange'` - 日期范围选择器
-- `'treeSelect'` - 树形选择器
-- `'inputNumber'` - 数字输入框
 
 ### 插槽（Slots）
 
