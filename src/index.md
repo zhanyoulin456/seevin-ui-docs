@@ -18,7 +18,7 @@ hero:
       link: /components/search
     - theme: alt
       text: 工具库文档
-      link: /utils
+      link: /utils/
     - theme: alt
       text: 在 Gitlab 上查看
       link: http://code.seevin.com/zhanyoulin/seevin
@@ -95,5 +95,5 @@ import '@seevin/ui/style/base.css'
 - [安装指南](/installation) - 了解如何安装和配置
 - [快速开始](/quick-start) - 5分钟上手使用
 - [组件文档](/components/search) - 查看详细的组件API
-- [工具库文档](/utils) - 了解实用工具函数
+- [工具库文档](/utils/) - 了解实用工具函数
 - [更新日志](/changelog) - 了解版本更新内容
