@@ -63,7 +63,7 @@ import vue from '@vitejs/plugin-vue'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { TDesignResolver } from 'unplugin-vue-components/resolvers'
-import { SeevinUIResolver } from '@seevin/ui'
+import { SeevinUIResolver } from '@seevin/ui/resolver'
 
 export default defineConfig({
   plugins: [
@@ -108,7 +108,7 @@ export default defineConfig({
 // webpack.config.js
 const Components = require('unplugin-vue-components/webpack')
 const AutoImport = require('unplugin-auto-import/webpack')
-const { SeevinUIResolver } = require('@seevin/ui')
+const { SeevinUIResolver } = require('@seevin/ui/resolver')
 
 module.exports = {
   plugins: [
