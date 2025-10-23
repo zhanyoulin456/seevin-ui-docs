@@ -361,6 +361,100 @@ const handleLinkageSubmit = async () => {
 const handleLinkageReset = () => {
   handleReset(linkageFormRef, linkageFormData)
 }
+
+// 分组表单数据
+const groupFormRef = ref()
+const groupFormData = ref({})
+
+const groupFormItems = [
+  {
+    type: 'group',
+    title: '基本信息',
+    col: 12,
+    groupStyle: {
+      padding: '16px',
+      background: '#f5f7fa',
+      borderRadius: '4px',
+      marginBottom: '16px'
+    },
+    children: [
+      {
+        type: 'input',
+        name: 'username',
+        label: '用户名',
+        required: true,
+        col: 6
+      },
+      {
+        type: 'input',
+        name: 'email',
+        label: '邮箱',
+        required: true,
+        col: 6
+      },
+      {
+        type: 'inputNumber',
+        name: 'age',
+        label: '年龄',
+        col: 6
+      },
+      {
+        type: 'select',
+        name: 'gender',
+        label: '性别',
+        col: 6,
+        options: [
+          { label: '男', value: 'male' },
+          { label: '女', value: 'female' }
+        ]
+      }
+    ]
+  },
+  {
+    type: 'group',
+    title: '联系方式',
+    col: 12,
+    groupStyle: {
+      padding: '16px',
+      background: '#f0f9ff',
+      borderRadius: '4px',
+      border: '1px solid #bfdbfe'
+    },
+    children: [
+      {
+        type: 'input',
+        name: 'phone',
+        label: '手机号',
+        required: true,
+        col: 6
+      },
+      {
+        type: 'input',
+        name: 'wechat',
+        label: '微信号',
+        col: 6
+      },
+      {
+        type: 'textarea',
+        name: 'address',
+        label: '地址',
+        col: 12,
+        componentProps: {
+          rows: 3
+        }
+      }
+    ]
+  }
+]
+
+// 分组表单专用事件处理
+const handleGroupSubmit = async () => {
+  await handleSubmit(groupFormRef, groupFormData, '分组表单')
+}
+
+const handleGroupReset = () => {
+  handleReset(groupFormRef, groupFormData)
+}
 </script>
 
 ## 基础用法
@@ -893,6 +987,217 @@ const handleReset = () => {
 </script>
 ```
 
+## 表单分组
+
+支持使用 `group` 类型对表单项进行分组，可以自定义分组样式和布局。分组支持嵌套，可以灵活组织复杂的表单结构。
+
+<DemoBox title="表单分组" description="使用 group 类型对表单项进行分组管理，支持自定义样式">
+  <ProForm
+    ref="groupFormRef"
+    :items="groupFormItems"
+    v-model="groupFormData"
+  />
+  <div style="margin-top: 16px; display: flex; gap: 12px;">
+    <TButton theme="primary" @click="handleGroupSubmit">提交</TButton>
+    <TButton theme="default" @click="handleGroupReset">重置</TButton>
+  </div>
+</DemoBox>
+
+```vue
+<template>
+  <ProForm ref="formRef" :items="formItems" v-model="formData" />
+  <div class="mt-4">
+    <t-button theme="primary" @click="handleSubmit">提交</t-button>
+    <t-button theme="default" @click="handleReset">重置</t-button>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { MessagePlugin } from 'tdesign-vue-next'
+
+const formRef = ref()
+const formData = ref({})
+
+const formItems = [
+  {
+    type: 'group',
+    title: '基本信息',
+    col: 12,
+    groupStyle: {
+      padding: '16px',
+      background: '#f5f7fa',
+      borderRadius: '4px',
+      marginBottom: '16px'
+    },
+    groupClass: 'custom-group',
+    children: [
+      {
+        type: 'input',
+        name: 'username',
+        label: '用户名',
+        required: true,
+        col: 6
+      },
+      {
+        type: 'input',
+        name: 'email',
+        label: '邮箱',
+        required: true,
+        col: 6
+      },
+      {
+        type: 'inputNumber',
+        name: 'age',
+        label: '年龄',
+        col: 6
+      },
+      {
+        type: 'select',
+        name: 'gender',
+        label: '性别',
+        col: 6,
+        options: [
+          { label: '男', value: 'male' },
+          { label: '女', value: 'female' }
+        ]
+      }
+    ]
+  },
+  {
+    type: 'group',
+    title: '联系方式',
+    col: 12,
+    groupStyle: {
+      padding: '16px',
+      background: '#f0f9ff',
+      borderRadius: '4px',
+      border: '1px solid #bfdbfe'
+    },
+    children: [
+      {
+        type: 'input',
+        name: 'phone',
+        label: '手机号',
+        required: true,
+        col: 6
+      },
+      {
+        type: 'input',
+        name: 'wechat',
+        label: '微信号',
+        col: 6
+      },
+      {
+        type: 'textarea',
+        name: 'address',
+        label: '地址',
+        col: 12,
+        componentProps: {
+          rows: 3
+        }
+      }
+    ]
+  }
+]
+
+const handleSubmit = async () => {
+  try {
+    const result = await formRef.value?.validate()
+    if (result === true) {
+      MessagePlugin.success(`提交成功！数据：${JSON.stringify(formData.value)}`)
+      console.log('表单数据:', formData.value)
+    }
+  } catch (error) {
+    MessagePlugin.error('表单验证失败，请检查输入')
+    console.error('验证失败:', error)
+  }
+}
+
+const handleReset = () => {
+  formRef.value?.reset()
+  MessagePlugin.info('表单已重置')
+}
+</script>
+
+<style scoped>
+.custom-group :deep(.pro-form-group-title) {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #1f2937;
+}
+</style>
+```
+
+### 分组高级用法
+
+分组支持以下高级特性：
+
+**1. 自定义分组样式**
+
+通过 `groupStyle` 和 `groupClass` 可以完全自定义分组容器的外观：
+
+```javascript
+{
+  type: 'group',
+  title: '自定义样式分组',
+  groupStyle: {
+    padding: '20px',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+  },
+  groupClass: 'my-custom-group',
+  children: [...]
+}
+```
+
+**2. 独立的栅格配置**
+
+每个分组可以有自己的栅格间隔配置：
+
+```javascript
+{
+  type: 'group',
+  title: '紧凑布局分组',
+  groupGutter: [8, 8], // 独立的栅格间隔
+  children: [...]
+}
+```
+
+**3. 动态显示分组**
+
+分组也支持 `visible` 属性，可以根据表单数据动态显示或隐藏整个分组：
+
+```javascript
+{
+  type: 'group',
+  title: '企业信息',
+  visible: (formData) => formData.userType === 'company',
+  children: [...]
+}
+```
+
+**4. 分组嵌套**
+
+分组支持嵌套，可以创建更复杂的表单结构：
+
+```javascript
+{
+  type: 'group',
+  title: '外层分组',
+  children: [
+    {
+      type: 'group',
+      title: '内层分组',
+      col: 6,
+      children: [...]
+    }
+  ]
+}
+```
+
 ## API
 
 ### Props
@@ -902,7 +1207,7 @@ const handleReset = () => {
 | `items`      | `ProFormItemConfig[]`                                     | `[]`       | 表单项配置数组（必传）          |
 | `modelValue` | `Record<string, any>`                                     | -          | 表单数据，支持 v-model 双向绑定 |
 | `gutter`     | `number \| GutterObject \| Array<GutterObject \| number>` | `[16, 24]` | 栅格间隔配置                    |
-| `rowProps`   | `Omit<RowProps, 'gutter'>`                                | `{}`       | 透传给 Row 组件的属性           |
+| `rowProps`   | `Omit<RowProps, 'gutter'>`                                | `{}`       | 透传给 t-row 组件的属性         |
 | `labelAlign` | `'left' \| 'right' \| 'top'`                              | `'top'`    | 标签对齐方式                    |
 | `layout`     | `'vertical' \| 'inline'`                                  | `vertical` | 表单布局方式                    |
 | `disabled`   | `boolean`                                                 | `false`    | 是否禁用整个表单                |
@@ -912,30 +1217,36 @@ _继承 TDesign Form 组件的所有属性（除了 `data`），详见 [TDesign 
 
 ### ProFormItemConfig 配置
 
-| 名称              | 类型                                                                                | 默认值   | 说明                                     |
-| ----------------- | ----------------------------------------------------------------------------------- | -------- | ---------------------------------------- |
-| `type`            | `FormItemType`                                                                      | -        | 表单项类型（必传）                       |
-| `name`            | `string`                                                                            | -        | 表单字段名称（必传）                     |
-| `label`           | `string \| TNode`                                                                   | -        | 字段标签名称                             |
-| `labelAlign`      | `'left' \| 'right' \| 'top'`                                                        | -        | 表单字段标签对齐方式                     |
-| `labelWidth`      | `string \| number`                                                                  | `100px`  | 标签宽度                                 |
-| `width`           | `number \| string`                                                                  | `'100%'` | 表单项宽度                               |
-| `style`           | `CSSProperties`                                                                     | -        | 表单项样式                               |
-| `col`             | `number \| Record<string, number>`                                                  | `12`     | 表单项占据的列数，基于12栅格系统         |
-| `colProps`        | `ColProps`                                                                          | -        | Col 组件属性，透传给 t-col               |
-| `rules`           | `FormRule[]`                                                                        | -        | 校验规则                                 |
-| `required`        | `boolean`                                                                           | `false`  | 是否必填                                 |
-| `trigger`         | `ValidateTriggerType`                                                               | `'all'`  | 校验触发方式                             |
-| `validateMessage` | `string`                                                                            | -        | 自定义校验文案                           |
-| `visible`         | `boolean \| function`                                                               | `true`   | 是否显示，支持函数动态控制               |
-| `disabled`        | `boolean \| function`                                                               | `false`  | 表单项组件是否禁用，支持函数动态控制     |
-| `readonly`        | `boolean \| function`                                                               | `false`  | 表单项组件是否只读，支持函数动态控制     |
-| `placeholder`     | `string`                                                                            | -        | 占位符文本                               |
-| `options`         | `Array<{label: string, value: any}>`                                                | -        | select、radio、checkbox 等组件的选项数据 |
-| `treeOptions`     | `any[]`                                                                             | -        | tree-select 组件的选项数据               |
-| `componentProps`  | `any`                                                                               | -        | 表单项组件属性透传                       |
-| `formItemProps`   | `Omit<FormItemProps, 'label' \| 'name' \| 'labelAlign' \| 'labelWidth' \| 'rules'>` | -        | FormItem 组件属性透传                    |
-| `render`          | `(formData: Record<string, any>, item: ProFormItemConfig) => VNode`                 | -        | 自定义渲染函数                           |
+| 名称              | 类型                                                                                | 默认值   | 说明                                           |
+| ----------------- | ----------------------------------------------------------------------------------- | -------- | ---------------------------------------------- |
+| `type`            | `FormItemType`                                                                      | -        | 表单项类型（必传）                             |
+| `name`            | `string`                                                                            | -        | 表单字段名称（必传）                           |
+| `label`           | `string \| TNode`                                                                   | -        | 字段标签名称                                   |
+| `labelAlign`      | `'left' \| 'right' \| 'top'`                                                        | -        | 表单字段标签对齐方式                           |
+| `labelWidth`      | `string \| number`                                                                  | `100px`  | 标签宽度                                       |
+| `width`           | `number \| string`                                                                  | `'100%'` | 表单项宽度                                     |
+| `style`           | `CSSProperties`                                                                     | -        | 表单项样式                                     |
+| `col`             | `number \| Record<string, number>`                                                  | `12`     | 表单项占据的列数，基于12栅格系统               |
+| `colProps`        | `ColProps`                                                                          | -        | Col 组件属性，透传给 t-col                     |
+| `rules`           | `FormRule[]`                                                                        | -        | 校验规则                                       |
+| `required`        | `boolean`                                                                           | `false`  | 是否必填                                       |
+| `trigger`         | `ValidateTriggerType`                                                               | `'all'`  | 校验触发方式                                   |
+| `validateMessage` | `string`                                                                            | -        | 自定义校验文案                                 |
+| `visible`         | `boolean \| function`                                                               | `true`   | 是否显示，支持函数动态控制                     |
+| `disabled`        | `boolean \| function`                                                               | `false`  | 表单项组件是否禁用，支持函数动态控制           |
+| `readonly`        | `boolean \| function`                                                               | `false`  | 表单项组件是否只读，支持函数动态控制           |
+| `placeholder`     | `string`                                                                            | -        | 占位符文本                                     |
+| `options`         | `Array<{label: string, value: any}>`                                                | -        | select、radio、checkbox 等组件的选项数据       |
+| `treeOptions`     | `any[]`                                                                             | -        | tree-select 组件的选项数据                     |
+| `componentProps`  | `any`                                                                               | -        | 表单项组件属性透传                             |
+| `formItemProps`   | `Omit<FormItemProps, 'label' \| 'name' \| 'labelAlign' \| 'labelWidth' \| 'rules'>` | -        | FormItem 组件属性透传                          |
+| `render`          | `(formData: Record<string, any>, item: ProFormItemConfig) => VNode`                 | -        | 自定义渲染函数                                 |
+| `title`           | `string \| TNode`                                                                   | -        | 分组标题（仅 type 为 'group' 时有效）          |
+| `groupStyle`      | `CSSProperties`                                                                     | -        | 分组容器样式（仅 type 为 'group' 时有效）      |
+| `groupClass`      | `string`                                                                            | -        | 分组容器类名（仅 type 为 'group' 时有效）      |
+| `children`        | `ProFormItemConfig[]`                                                               | -        | 分组内的表单项（仅 type 为 'group' 时有效）    |
+| `groupGutter`     | `number \| GutterObject \| Array<GutterObject \| number>`                           | 继承父级 | 分组内的栅格间隔（仅 type 为 'group' 时有效）  |
+| `groupRowProps`   | `Omit<RowProps, 'gutter'>`                                                          | -        | 分组内的 Row 配置（仅 type 为 'group' 时有效） |
 
 ### Events
 
@@ -956,14 +1267,15 @@ _ProForm 组件本身不提供插槽，所有内容都通过 `items` 配置生�
 
 通过 `ref` 可以访问以下方法：
 
-| 名称            | 类型                                                                 | 说明                       |
-| --------------- | -------------------------------------------------------------------- | -------------------------- |
-| `formRef`       | `Readonly<ShallowRef<FormInstanceFunctions<Data> \| null>>`          | 底层表单组件实例           |
-| `formData`      | `Record<string, any>`                                                | 当前表单数据（响应式引用） |
-| `setFormValues` | `(values: Record<string, any>) => void`                              | 设置表单数据               |
-| `reset`         | `() => void`                                                         | 重置表单                   |
-| `clearValidate` | `(fields?: string[]) => void`                                        | 清除验证结果               |
-| `validate`      | `(params?: FormValidateParams) => Promise<FormValidateResult<Data>>` | 验证表单                   |
+| 名称                    | 类型                                                                 | 说明                                                       |
+| ----------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `formRef`               | `Readonly<ShallowRef<FormInstanceFunctions<Data> \| null>>`          | 底层表单组件实例                                           |
+| `formData`              | `Record<string, any>`                                                | 当前表单数据（响应式引用）                                 |
+| `getVisibleFieldsValue` | `() => Record<string, any>`                                          | 获取所有可见字段的值（排除被 `visible: false` 隐藏的字段） |
+| `setFormValues`         | `(values: Record<string, any>) => void`                              | 设置表单数据                                               |
+| `reset`                 | `() => void`                                                         | 重置表单                                                   |
+| `clearValidate`         | `(fields?: string[]) => void`                                        | 清除验证结果                                               |
+| `validate`              | `(params?: FormValidateParams) => Promise<FormValidateResult<Data>>` | 验证表单                                                   |
 
 ### FormItemType 表单项类型
 
@@ -981,12 +1293,117 @@ _ProForm 组件本身不提供插槽，所有内容都通过 `items` 配置生�
 | `treeSelect`     | 树形选择     | TDesign TreeSelect        |
 | `upload`         | 文件上传     | ProUpload                 |
 | `layout`         | 布局占位     | 通过 render 函数自定义    |
+| `group`          | 表单分组     | 分组容器，支持嵌套表单项  |
+
+## 高级特性
+
+### 获取可见字段的值
+
+在某些场景下，你可能只需要获取当前可见字段的值（排除被 `visible: false` 隐藏的字段）。可以使用 `getVisibleFieldsValue` 方法：
+
+```vue
+<template>
+  <ProForm ref="formRef" :items="formItems" v-model="formData" />
+  <div class="mt-4">
+    <t-button theme="primary" @click="handleSubmitVisible">提交可见字段</t-button>
+    <t-button theme="default" @click="handleSubmitAll">提交所有字段</t-button>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+import { MessagePlugin } from 'tdesign-vue-next'
+
+const formRef = ref()
+const formData = ref({
+  userType: 'student',
+  companyName: '',
+  position: '',
+  studentId: '',
+  school: ''
+})
+
+const formItems = computed(() => [
+  {
+    type: 'select',
+    name: 'userType',
+    label: '用户类型',
+    options: [
+      { label: '企业用户', value: 'company' },
+      { label: '学生用户', value: 'student' }
+    ]
+  },
+  {
+    type: 'input',
+    name: 'companyName',
+    label: '公司名称',
+    visible: formData.value.userType === 'company'
+  },
+  {
+    type: 'input',
+    name: 'position',
+    label: '职位',
+    visible: formData.value.userType === 'company'
+  },
+  {
+    type: 'input',
+    name: 'studentId',
+    label: '学号',
+    visible: formData.value.userType === 'student'
+  },
+  {
+    type: 'input',
+    name: 'school',
+    label: '学校',
+    visible: formData.value.userType === 'student'
+  }
+])
+
+// 只提交可见字段
+const handleSubmitVisible = async () => {
+  try {
+    const result = await formRef.value?.validate()
+    if (result === true) {
+      const visibleData = formRef.value?.getVisibleFieldsValue()
+      console.log('可见字段数据:', visibleData)
+      // 当 userType 为 'student' 时，只包含: { userType, studentId, school }
+      // 当 userType 为 'company' 时，只包含: { userType, companyName, position }
+      MessagePlugin.success(`提交可见字段成功！`)
+    }
+  } catch (error) {
+    MessagePlugin.error('表单验证失败')
+  }
+}
+
+// 提交所有字段（包括隐藏的）
+const handleSubmitAll = async () => {
+  try {
+    const result = await formRef.value?.validate()
+    if (result === true) {
+      console.log('所有字段数据:', formData.value)
+      // 包含所有字段，无论是否可见
+      MessagePlugin.success(`提交所有字段成功！`)
+    }
+  } catch (error) {
+    MessagePlugin.error('表单验证失败')
+  }
+}
+</script>
+```
+
+**使用场景：**
+
+1. **动态表单提交**：当表单有条件显示的字段时，只提交用户实际看到和填写的字段
+2. **数据清理**：避免提交不相关的隐藏字段数据，减少后端数据处理负担
+3. **分组表单**：当整个分组被隐藏时，自动排除该分组内的所有字段
+4. **多步骤表单**：在每一步只提交当前步骤可见的字段
 
 ## 样式类名
 
-| 类名        | 说明           |
-| ----------- | -------------- |
-| `.pro-form` | 表单组件根容器 |
+| 类名                    | 说明                     |
+| ----------------------- | ------------------------ |
+| `.pro-form`             | 表单组件根容器           |
+| `.pro-form-group-title` | 分组标题样式（可自定义） |
 
 _其他样式类名继承自 TDesign Form、Row、Col 等组件_
 
@@ -1000,6 +1417,7 @@ _其他样式类名继承自 TDesign Form、Row、Col 等组件_
 - **动态控制**：支持动态控制表单项的显示、禁用、只读状态
 - **自动验证**：根据 `required` 属性自动生成验证规则和消息
 - **栅格布局**：基于 12 栅格系统的响应式布局
+- **表单分组**：支持使用 `group` 类型对表单项进行分组，可自定义分组样式和布局
 - **数据同步**：支持双向数据绑定和手动数据设置
 
 ## 使用注意事项
@@ -1010,3 +1428,7 @@ _其他样式类名继承自 TDesign Form、Row、Col 等组件_
 4. **动态表单**：使用计算属性 `computed` 来创建动态表单项
 5. **自定义渲染**：`render` 函数的参数顺序是 `(formData, item)`
 6. **布局控制**：使用 `col` 属性控制表单项宽度，支持响应式配置
+7. **表单分组**：使用 `type: 'group'` 创建分组，分组必须包含 `children` 属性，分组支持嵌套
+8. **分组样式**：可通过 `groupStyle` 和 `groupClass` 自定义分组容器样式
+9. **分组布局**：分组内可通过 `groupGutter` 和 `groupRowProps` 自定义栅格布局，默认继承父级配置
+10. **可见字段获取**：使用 `getVisibleFieldsValue()` 方法可以只获取当前可见字段的值，自动排除被 `visible: false` 隐藏的字段和分组

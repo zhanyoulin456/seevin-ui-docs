@@ -1,10 +1,11 @@
 # ProUpload 文件上传组件
 
-一个功能强大的文件上传组件，基于 TDesign Upload 组件深度封装，提供了阿里云 OSS 直传、文件类型自动验证进度监控等企业级特性。组件支持全局配置和局部配置的灵活组合，内置了完善的错误处理和用户友好的提示机制，适用于各种文件上传场景。
+一个功能强大的文件上传组件，基于 TDesign Upload 组件深度封装，提供了阿里云 OSS 直传、图片裁剪、文件类型自动验证、进度监控等企业级特性。组件支持全局配置和局部配置的灵活组合，内置了完善的错误处理和用户友好的提示机制，适用于各种文件上传场景。
 
 ## 使用场景
 
 - **单文件上传**：头像上传、身份证照片上传、合同文件上传等
+- **图片裁剪上传**：头像裁剪、横幅图片裁剪、产品图片统一尺寸等
 - **批量文件上传**：产品图片批量上传、数据导入文件上传等
 - **拖拽上传**：大文件上传、多文件同时上传等高效场景
 - **图片墙**：商品图片管理、照片相册等需要缩略图展示的场景
@@ -14,6 +15,7 @@
 ## 核心特性
 
 - **OSS 直传**：内置阿里云 OSS 直传支持，减少服务器压力
+- **图片裁剪**：内置图片裁剪功能，支持自定义裁剪比例和裁剪参数
 - **类型验证**：自动根据 MIME 类型验证文件格式，提供友好提示
 - **进度监控**：实时显示上传进度，支持暂停和取消操作
 - **全局配置**：支持通过 ProConfigProvider 进行全局配置
@@ -28,7 +30,10 @@
 2. **实现签名服务**：在后端实现一个获取 OSS 上传签名的接口
 3. **配置签名函数**：在前端实现 `signature` 函数，调用后端接口获取签名
 
-⚠️ **提示**：如果您不使用 OSS 直传，可以通过 `request-method` 属性自定义上传逻辑。
+⚠️ **提示**：
+
+- 如果您不使用 OSS 直传，可以通过 `request-method` 属性自定义上传逻辑
+- 图片裁剪功能基于 `vue-cropper` 库实现，组件已内置该依赖，无需额外安装
 
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -280,6 +285,131 @@ const handleSuccess: ProUploadProps['onSuccess'] = e => {
 
 const handleFail: ProUploadProps['onFail'] = e => {
   // ...
+}
+</script>
+```
+
+## 图片裁剪
+
+通过 `aspect-ratio` 属性开启图片裁剪功能，支持自定义裁剪比例。组件会在上传图片前自动弹出裁剪弹窗。
+
+<DemoBox title="图片裁剪" description="上传图片前进行裁剪，支持自定义裁剪比例">
+  <div class="space-y-4">
+    <ProUpload
+      v-model="fileList"
+      :signature="getSignature"
+      accept="image/*"
+      aspect-ratio="16:9"
+      theme="image"
+      @success="handleSuccess"
+      @fail="handleFail"
+    />
+    <p class="text-sm text-gray-500">裁剪比例：16:9（适用于横幅图片）</p>
+  </div>
+</DemoBox>
+
+```vue
+<template>
+  <ProUpload
+    v-model="fileList"
+    :signature="getSignature"
+    accept="image/*"
+    aspect-ratio="16:9"
+    theme="image"
+    @success="handleSuccess"
+    @fail="handleFail"
+  />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { MessagePlugin, type UploadFile, type ProUploadProps } from '@seevin/ui'
+
+const fileList = ref<UploadFile[]>([])
+
+const getSignature: ProUploadProps['signature'] = async (fileName, file) => {
+  // 获取签名逻辑...
+  return {
+    accessId: 'YOUR_ACCESS_ID',
+    dir: 'user-uploads',
+    host: 'https://your-oss-bucket.oss-cn-hangzhou.aliyuncs.com',
+    policy: 'YOUR_POLICY_BASE64',
+    signature: 'YOUR_SIGNATURE',
+    fileName: `demo_${Date.now()}_${file.name}`
+  }
+}
+
+const handleSuccess: ProUploadProps['onSuccess'] = ({ file }) => {
+  MessagePlugin.success(`${file.name} 上传成功`)
+}
+
+const handleFail: ProUploadProps['onFail'] = ({ file }) => {
+  MessagePlugin.error(`${file.name} 上传失败`)
+}
+</script>
+```
+
+### 自定义裁剪参数
+
+通过 `cropper-props` 和 `dialog-props` 可以自定义裁剪器和弹窗的配置。
+
+<DemoBox title="自定义裁剪参数" description="自定义裁剪器的输出格式、质量等参数">
+  <ProUpload
+    v-model="fileList"
+    :signature="getSignature"
+    accept="image/*"
+    aspect-ratio="1:1"
+    :cropper-props="{
+      outputType: 'jpeg',
+      outputSize: 0.8,
+      canScale: true,
+      autoCropWidth: 200,
+      autoCropHeight: 200
+    }"
+    :dialog-props="{
+      header: '裁剪头像',
+      width: '800px'
+    }"
+    theme="image"
+    @success="handleSuccess"
+  />
+</DemoBox>
+
+```vue
+<template>
+  <ProUpload
+    v-model="fileList"
+    :signature="getSignature"
+    accept="image/*"
+    aspect-ratio="1:1"
+    :cropper-props="{
+      outputType: 'jpeg',
+      outputSize: 0.8,
+      canScale: true,
+      autoCropWidth: 200,
+      autoCropHeight: 200
+    }"
+    :dialog-props="{
+      header: '裁剪头像',
+      width: '800px'
+    }"
+    theme="image"
+    @success="handleSuccess"
+  />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { UploadFile, ProUploadProps } from '@seevin/ui'
+
+const fileList = ref<UploadFile[]>([])
+
+const getSignature: ProUploadProps['signature'] = async (fileName, file) => {
+  // 获取签名逻辑...
+}
+
+const handleSuccess: ProUploadProps['onSuccess'] = ({ file }) => {
+  console.log('裁剪后的图片已上传:', file)
 }
 </script>
 ```
@@ -621,10 +751,34 @@ const getSignature: ProUploadProps['signature'] = async (fileName, file) => {
 
 ### Props
 
-| 名称        | 类型                                                                  | 默认值                             | 说明                                                                               |
-| ----------- | --------------------------------------------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------- |
-| `signature` | `(fileName: string, file: UploadFile) => Promise<ProUploadSignature>` | `-`                                | **必需**。获取 OSS 上传签名信息的函数。函数优先级：`props` > `ProConfigProvider`。 |
-| `rename`    | `(file: UploadFile) => string`                                        | `() => generateUUID() + file.name` | 文件重命名函数，返回新的文件名。                                                   |
+| 名称           | 类型                                                                  | 默认值                             | 说明                                                                                                   |
+| -------------- | --------------------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `signature`    | `(fileName: string, file: UploadFile) => Promise<ProUploadSignature>` | `-`                                | **必需**。获取 OSS 上传签名信息的函数。函数优先级：`props` > `ProConfigProvider`。                     |
+| `rename`       | `(file: UploadFile) => string`                                        | `() => generateUUID() + file.name` | 文件重命名函数，返回新的文件名。                                                                       |
+| `aspectRatio`  | `string`                                                              | `-`                                | 图片裁剪比例，格式为 `"4:3"` 或 `"16:9"`。设置后会在上传图片前自动弹出裁剪弹窗。                       |
+| `cropperProps` | `Record<string, any>`                                                 | 见下方默认值                       | `vue-cropper` 的配置项，用于自定义裁剪器行为。[查看完整配置](https://github.com/xyxiao001/vue-cropper) |
+| `dialogProps`  | `DialogProps`                                                         | `-`                                | `TDesign Dialog` 的配置项，用于自定义裁剪弹窗样式和行为。                                              |
+
+#### cropperProps 默认配置
+
+组件为 `vue-cropper` 提供了以下默认配置，您可以通过 `cropperProps` 覆盖这些默认值：
+
+```javascript
+{
+  outputSize: 1,        // 输出图片质量（0-1）
+  outputType: 'png',    // 输出图片格式（jpeg/png/webp）
+  info: true,           // 显示裁剪信息
+  full: false,          // 是否输出原图比例的截图
+  canMove: true,        // 图片是否可以移动
+  canMoveBox: true,     // 裁剪框是否可以移动
+  original: false,      // 是否按原始比例渲染
+  autoCrop: true,       // 是否默认生成截图框
+  fixed: true,          // 是否固定裁剪框比例
+  centerBox: true,      // 裁剪框是否限制在图片内
+  infoTrue: true,       // 是否显示真实的输出图片宽高
+  mode: 'contain'       // 图片渲染模式（contain/cover）
+}
+```
 
 同时继承 `TDesign Upload` 的所有 `Props`，常用属性包括：
 
@@ -689,7 +843,7 @@ const getSignature: ProUploadProps['signature'] = async (fileName, file) => {
 ## 类型定义
 
 ```ts
-import type { UploadFile, UploadInstanceFunctions, UploadProps } from '@seevin/ui'
+import type { UploadFile, UploadInstanceFunctions, UploadProps, DialogProps } from '@seevin/ui'
 import { Ref } from 'vue'
 
 export interface ProUploadProps extends UploadProps {
@@ -701,6 +855,18 @@ export interface ProUploadProps extends UploadProps {
    * @description 文件重命名函数，返回新的文件名。
    */
   rename?: (file: UploadFile) => string
+  /**
+   * @description 图片裁剪比例，格式为 "4:3" 或 "16:9"
+   */
+  aspectRatio?: string
+  /**
+   * @description vue-cropper 的配置项
+   */
+  cropperProps?: Record<string, any>
+  /**
+   * @description t-dialog 的配置项，用于控制裁剪弹窗
+   */
+  dialogProps?: DialogProps
 }
 
 export interface ProUploadSignature {
@@ -816,65 +982,43 @@ const uploadConfig = reactive({
     onFail: ({ file, error }) => {
       console.error(`文件 ${file.name} 上传失败:`, error)
       MessagePlugin.error(`文件 ${file.name} 上传失败，请重试`)
+    },
+
+    // 全局裁剪配置
+    cropperProps: {
+      outputType: 'jpeg',
+      outputSize: 0.9,
+      canScale: true
+    },
+
+    // 全局裁剪弹窗配置
+    dialogProps: {
+      width: '800px',
+      placement: 'center'
     }
   }
 })
 </script>
 ```
 
-### 4. 性能优化
+### 4. 常用裁剪比例配置
 
 ```javascript
-// 大文件上传优化
-const optimizedUploadConfig = {
-  // 分片上传阀值（50MB）
-  chunkSize: 50 * 1024 * 1024,
-
-  // 并发上传数量限制
-  maxConcurrency: 3,
-
-  // 重试配置
-  retryTimes: 3,
-  retryDelay: 1000
+// 常用的图片裁剪比例
+const cropRatios = {
+  square: '1:1', // 正方形（头像、图标）
+  landscape: '16:9', // 横向（横幅、视频封面）
+  portrait: '9:16', // 竖向（手机壁纸、故事）
+  photo: '4:3', // 照片（传统相机比例）
+  widescreen: '21:9', // 超宽屏（电影、横幅）
+  card: '3:2', // 卡片（名片、证件照）
+  a4: '210:297' // A4 纸张比例
 }
 
-// 图片压缩优化
-const compressImageBeforeUpload = (file, quality = 0.8, maxWidth = 1920, maxHeight = 1080) => {
-  return new Promise(resolve => {
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    const img = new Image()
-
-    img.onload = () => {
-      let { width, height } = img
-
-      // 计算压缩后尺寸
-      if (width > maxWidth || height > maxHeight) {
-        const ratio = Math.min(maxWidth / width, maxHeight / height)
-        width *= ratio
-        height *= ratio
-      }
-
-      canvas.width = width
-      canvas.height = height
-      ctx.drawImage(img, 0, 0, width, height)
-
-      canvas.toBlob(
-        blob => {
-          const compressedFile = new File([blob], file.name, {
-            type: file.type,
-            lastModified: Date.now()
-          })
-          resolve(compressedFile)
-        },
-        file.type,
-        quality
-      )
-    }
-
-    img.src = URL.createObjectURL(file.raw || file)
-  })
-}
+// 使用示例
+<ProUpload aspect-ratio="1:1" /> // 头像上传
+<ProUpload aspect-ratio="16:9" /> // 横幅图片
+<ProUpload aspect-ratio="4:3" /> // 产品图片
 ```
 
 ## 使用注意事项
@@ -885,6 +1029,8 @@ const compressImageBeforeUpload = (file, quality = 0.8, maxWidth = 1920, maxHeig
 4. **内存优化**：对于大量文件上传，注意及时清理不需要的文件引用
 5. **兼容性**：在低版本浏览器中可能需要 polyfill 支持
 6. **用户体验**：提供清晰的上传状态反馈和错误提示
+7. **图片裁剪**：裁剪功能仅对图片文件生效，非图片文件会跳过裁剪流程直接上传
+8. **裁剪比例**：`aspectRatio` 格式必须为 `"宽:高"`，如 `"16:9"`、`"4:3"`、`"1:1"` 等
 
 ## 相关组件
 

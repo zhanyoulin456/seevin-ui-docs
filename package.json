@@ -8,7 +8,7 @@
     "docs:preview": "vitepress preview"
   },
   "dependencies": {
-    "@seevin/ui": "0.1.4",
+    "@seevin/ui": "0.2.2",
     "tdesign-icons-vue-next": "0.3.7",
     "tdesign-vue-next": "1.16.1",
     "vue": "3.5.17"
