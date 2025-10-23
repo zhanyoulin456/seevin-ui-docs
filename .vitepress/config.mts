@@ -131,6 +131,9 @@ export default defineConfig({
     },
     optimizeDeps: {
       include: ['@seevin/ui']
+    },
+    ssr: {
+      noExternal: ['@seevin/ui', 'vue-cropper']
     }
   }
 })
