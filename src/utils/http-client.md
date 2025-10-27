@@ -9,7 +9,25 @@ HttpClient 是基于 Axios 的现代化 HTTP 客户端，提供了简洁的 API 
 
 ```ts
 import { HttpClient } from '@seevin/common'
+
+// 导入类型
+import type {
+  BaseResponse,
+  RequestError,
+  ExtendedAxiosRequestConfig,
+  ExtendedAxiosResponse,
+  AxiosError,
+  AxiosResponse,
+  InternalAxiosRequestConfig
+} from '@seevin/common'
+
+// 导入 axios 实例（用于工具方法）
+import { axios } from '@seevin/common'
 ```
+
+:::tip 提示
+`@seevin/common` 已经内置了 axios，你不需要单独安装 axios 依赖。所有 axios 相关的类型和工具方法都可以从 `@seevin/common` 导入。
+:::
 
 ## 最佳实践
 
@@ -106,7 +124,131 @@ const loadData = async () => {
 </script>
 ```
 
+## 拦截器执行顺序
+
+### 多个拦截器的执行机制
+
+当你配置多个拦截器时，执行顺序如下：
+
+#### 请求拦截器（按配置顺序执行）
+
+```ts
+const client = new HttpClient({
+  interceptors: {
+    request: [
+      {
+        onFulfilled: config => {
+          console.log('请求拦截器 1 执行') // 第一个执行
+          config.headers.set('Authorization', 'Bearer token')
+          return config
+        }
+      },
+      {
+        onFulfilled: config => {
+          console.log('请求拦截器 2 执行') // 第二个执行
+          config.headers.set('X-Custom-Header', 'value')
+          return config
+        }
+      },
+      {
+        onFulfilled: config => {
+          console.log('请求拦截器 3 执行') // 第三个执行
+          return config
+        }
+      }
+    ]
+  }
+})
+
+// 执行顺序：拦截器 1 → 拦截器 2 → 拦截器 3 → 发送请求
+```
+
+#### 响应拦截器（按配置顺序执行）
+
+```ts
+const client = new HttpClient({
+  interceptors: {
+    response: [
+      {
+        onFulfilled: response => {
+          console.log('响应拦截器 1 执行') // 第一个执行
+          // 检查业务状态码
+          if (response.data.code !== 200) {
+            throw new Error(response.data.msg)
+          }
+          return response
+        }
+      },
+      {
+        onFulfilled: response => {
+          console.log('响应拦截器 2 执行') // 第二个执行
+          // 数据转换
+          return response
+        }
+      },
+      {
+        onFulfilled: response => {
+          console.log('响应拦截器 3 执行') // 第三个执行
+          // 日志记录
+          return response
+        },
+        onRejected: error => {
+          console.log('响应错误拦截器 3 执行')
+          // 错误处理
+          return Promise.reject(error)
+        }
+      }
+    ]
+  }
+})
+
+// 成功响应执行顺序：拦截器 1 → 拦截器 2 → 拦截器 3 → 默认错误标准化拦截器
+// 错误响应执行顺序：拦截器 1 → 拦截器 2 → 拦截器 3 → 默认错误标准化拦截器
+```
+
+:::tip 执行顺序说明
+
+- **请求拦截器**：按照数组顺序执行（从上到下）
+- **响应拦截器**：按照数组顺序执行（从上到下）
+- **默认错误拦截器**：在所有用户拦截器之后执行，用于错误标准化
+  :::
+
+### 错误标准化
+
+HttpClient 会在所有用户拦截器执行完毕后，自动将 `AxiosError` 标准化为 `RequestError`：
+
+```ts
+interface RequestError extends Error {
+  config: InternalAxiosRequestConfig
+  status?: number // HTTP 状态码
+  code?: string // 错误代码（如 'ERR_NETWORK'）
+  request?: any
+  response?: AxiosResponse<BaseResponse>
+  message: string // 优先使用后端返回的 msg，兜底使用 axios 的 message
+  name: 'RequestError'
+  isAxiosError: boolean
+}
+```
+
+**错误消息优先级**：
+
+1. `response.data.msg`（后端返回的业务错误消息）
+2. `response.data.message`（后端返回的备用消息字段）
+3. `error.message`（axios 的原始错误消息）
+
+```ts
+try {
+  await client.get('/api/user')
+} catch (error: RequestError) {
+  console.log(error.message) // 直接获取友好的错误消息
+  console.log(error.status) // HTTP 状态码，如 500
+  console.log(error.code) // 错误代码，如 'ERR_BAD_RESPONSE'
+}
+```
+
 ## TypeScript 支持
+
+### 基础类型推导
 
 ```ts
 // 自动类型推导
@@ -125,6 +267,136 @@ interface User {
 const users = await client.get<User[]>('/users')
 // users.data 具有正确的类型：User[]
 ```
+
+### 导出的类型
+
+HttpClient 导出了以下类型供使用：
+
+```ts
+import type {
+  // 自定义类型
+  BaseResponse, // 基础响应体类型
+  RequestError, // 标准化的错误类型
+  ExtendedAxiosRequestConfig, // 扩展的请求配置类型
+  ExtendedAxiosResponse, // 扩展的响应类型（config 字段为 ExtendedAxiosRequestConfig）
+  HttpClientOptions, // HttpClient 构造函数配置类型
+
+  // Axios 原生类型（重新导出）
+  AxiosError, // Axios 错误类型
+  AxiosResponse, // Axios 响应类型
+  AxiosRequestConfig, // Axios 请求配置类型
+  InternalAxiosRequestConfig, // Axios 内部请求配置类型
+  AxiosHeaders, // Axios Headers 类型
+  AxiosInstance // Axios 实例类型
+} from '@seevin/common'
+```
+
+### 自定义字段支持
+
+`ExtendedAxiosRequestConfig` 支持添加自定义字段：
+
+```ts
+// 方式 1：直接使用（运行时有效，但无类型提示）
+client.get('/api/user', {
+  loading: true, // 自定义字段
+  download: false, // 自定义字段
+  noErrMsg: true // 自定义字段
+})
+
+// 方式 2：使用类型断言（有类型提示）
+interface CustomConfig extends ExtendedAxiosRequestConfig {
+  loading?: boolean
+  download?: boolean
+  noErrMsg?: boolean
+}
+
+client.get('/api/user', {
+  loading: true,
+  download: false,
+  noErrMsg: true
+} as CustomConfig)
+
+// 方式 3：全局扩展（推荐，所有地方都有类型提示）
+declare module '@seevin/common' {
+  interface ExtendedAxiosRequestConfig {
+    loading?: boolean
+    download?: boolean
+    noErrMsg?: boolean
+  }
+}
+
+// 之后所有地方都有类型提示
+client.get('/api/user', {
+  loading: true, // ✓ 有类型提示
+  download: false, // ✓ 有类型提示
+  noErrMsg: true // ✓ 有类型提示
+})
+```
+
+### 在拦截器中使用自定义字段
+
+```ts
+const client = new HttpClient({
+  interceptors: {
+    request: [
+      {
+        onFulfilled: config => {
+          // 根据自定义字段显示 loading
+          if (config.loading) {
+            showLoading()
+          }
+          return config
+        }
+      }
+    ],
+    response: [
+      {
+        onFulfilled: response => {
+          // 隐藏 loading
+          if (response.config.loading) {
+            hideLoading()
+          }
+
+          // 处理文件下载
+          if (response.config.download) {
+            downloadFile(response.data, response.config.fileName)
+          }
+
+          return response
+        },
+        onRejected: error => {
+          // 错误时也要隐藏 loading
+          if (error.config?.loading) {
+            hideLoading()
+          }
+          return Promise.reject(error)
+        }
+      }
+    ]
+  }
+})
+```
+
+:::warning 注意
+`response.config` 的类型是 `InternalAxiosRequestConfig`，如果需要访问自定义字段，建议使用 `ExtendedAxiosResponse` 类型：
+
+```ts
+import type { ExtendedAxiosResponse, BaseResponse } from '@seevin/common'
+
+response: [
+  {
+    onFulfilled: (response: ExtendedAxiosResponse<BaseResponse<User>>) => {
+      if (response.config.loading) {
+        // ✓ 有类型提示
+        hideLoading()
+      }
+      return response
+    }
+  }
+]
+```
+
+:::
 
 ## API 参考
 
@@ -188,6 +460,22 @@ interface ExtendedAxiosRequestConfig<TReturnFullResponse extends boolean = false
    * 用于可管理的请求取消。提供此键后，可以使用 `client.cancelRequest(key)` 来取消请求。
    */
   requestKey?: string
+  /**
+   * 允许用户添加自定义字段
+   */
+  [key: string]: any
+}
+```
+
+#### ExtendedAxiosResponse
+
+```typescript
+/**
+ * 扩展的 AxiosResponse，config 字段使用 ExtendedAxiosRequestConfig
+ * 用于在响应拦截器中访问自定义字段
+ */
+interface ExtendedAxiosResponse<T = any> extends Omit<AxiosResponse<T>, 'config'> {
+  config: ExtendedAxiosRequestConfig
 }
 ```
 
